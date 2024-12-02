@@ -6,9 +6,9 @@ from qlib.utils import init_instance_by_config
 import os,sys
 os.chdir(sys.path[0])
 
-# python example.py --config_file configs/config_tsformer.yaml
+# python example.py --config_file configs/config_wftnet.yaml
 
-def main(seed, config_file="configs/config_transformer.yaml"):
+def main(seed, config_file="config_wftnet.yaml"):
 
     # set random seed
     with open(config_file) as f:
@@ -38,6 +38,6 @@ if __name__ == "__main__":
     # set params from cmd
     parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("--seed", type=int, default=1000, help="random seed")
-    parser.add_argument("--config_file", type=str, default="configs/config_mlp.yaml", help="config file")
+    parser.add_argument("--config_file", type=str, default="config_wftnet.yaml", help="config file")
     args = parser.parse_args()
     main(**vars(args))
