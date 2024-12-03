@@ -16,7 +16,8 @@ import pprint
 import warnings
 warnings.filterwarnings('ignore')
 
-provider_uri = "~/.qlib/qlib_data/cn_data"  # target_dir
+provider_uri = "/data/linq/.qlib/qlib_data/cn_data"  # target_dir
+URI = '/home/linq/finance/qniverse/mlrun'
 qlib.init(provider_uri=provider_uri, region=REG_CN)
 
 from lilab.qlib.utils.tools import normalize_position_history, load_position_text, load_position_history, save_position_history, fill_price_position_history
@@ -25,13 +26,15 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--today", type=str)
+# parser.add_argument("--btstart", type=str)
+# parser.add_argument("--btend", type=str)
 args = parser.parse_args()
 
 # TODAY = '2024-10-18'
 TODAY = args.today
 test_split = (TODAY, TODAY)
 
-EXP_NAME, rid = 'EXP_BENCH', '9f4458c45b0d4bf8b2357cc5a271cd45'
+EXP_NAME, rid = 'GBDT', 'f09426d39ef64dd48c3facd2b121498e'
 
 TOPK = 10
 NDROP = 2
@@ -39,15 +42,16 @@ HT = 10
 
 info = {
     'ALGO': ['GBDT'],
-    'market': ['scsi300'], 
+    'market': ['csi300_ext'], 
     'benchmark': ["SH000300"], 
     'feat': ["Alpha360"], 
     'label': ['r1'],
     'params': [f'topk {TOPK} ndrop {NDROP} HT {HT}']
 }
 
-nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
-filter_pipe=[nameDFilter]
+# nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
+# filter_pipe=[nameDFilter]
+filter_pipe=[]
 benchmark = BENCH_Step(test_split,
                         market=info['market'][0], \
                         benchmark=info['benchmark'][0], \
@@ -59,7 +63,7 @@ benchmark = BENCH_Step(test_split,
 dataset = init_instance_by_config(benchmark.dataset_config)
 # dataset.prepare('test')
 
-with R.start(experiment_name=EXP_NAME, uri='../gbdt/mlrun'):
+with R.start(experiment_name=EXP_NAME, uri=URI):
     recorder = R.get_recorder(recorder_id=rid)
     model = recorder.load_object("trained_model")
     ba_rid = R.get_recorder().id
