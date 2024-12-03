@@ -33,15 +33,15 @@ parser.add_argument("--btstart", type=str)
 parser.add_argument("--btend", type=str)
 args = parser.parse_args()
 
-ALGO = 'OLMAR'
+ALGO = 'KELLY'
 EXP_NAME, URI = ALGO, '/home/linq/finance/qniverse/mlrun'
 
 test_split = (args.btstart, args.btend)
-algo = OLMAR()
+algo = Kelly(7, 0, 1, True, mu_estimate=True)
 up_adapter = UPAdapter('csi300_ext', test_split[0], test_split[1], algo)
 
 info = {
-    'ALGO': ['OLMAR'],
+    'ALGO': [ALGO],
     'BENCH_DATASET': ['BENCH_Step'],
     'market': ['csi300_ext'], 
     'benchmark': ["SH000300"], 
