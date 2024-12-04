@@ -7,3 +7,4 @@ checkpoints/
 checkpoint/
 build/
 result/
+.DS_Store
