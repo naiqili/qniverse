@@ -8,3 +8,4 @@ checkpoint/
 build/
 result/
 .DS_Store
+*.log

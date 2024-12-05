@@ -20,7 +20,7 @@ print('updating index data...')
 symbol_wk = wk_db.read_sql('SELECT DISTINCT windcode FROM a_share_index ORDER BY windcode;', db_loc='low_freq_db')
 for _, row in symbol_wk.iterrows():
     s = row['windcode']
-    print(s)
+    # print(s)
     # df = wk_db.read_sql("SELECT trade_dt, windcode, open_price, high_price, low_price, close_price, volume, amount, adj_factor FROM a_share_market WHERE windcode='{s}';".format(s=s), db_loc='low_freq_db')
     df = wk_db.read_sql("SELECT * FROM a_share_index WHERE windcode='{s}' ORDER BY trade_dt;".format(s=s), db_loc='low_freq_db')
     df = df.dropna()
@@ -48,7 +48,7 @@ print('updating stock data...')
 symbol_wk = wk_db.read_sql('SELECT DISTINCT windcode FROM a_share_market ORDER BY windcode;', db_loc='low_freq_db')
 for _, row in symbol_wk.iterrows():
     s = row['windcode']
-    print(s)
+    # print(s)
     # df = wk_db.read_sql("SELECT trade_dt, windcode, open_price, high_price, low_price, close_price, volume, amount, adj_factor FROM a_share_market WHERE windcode='{s}';".format(s=s), db_loc='low_freq_db')
     df = wk_db.read_sql("SELECT * FROM a_share_market WHERE windcode='{s}' ORDER BY trade_dt;".format(s=s), db_loc='low_freq_db')
     ori_raw_price = df.iloc[0]['close_price']
