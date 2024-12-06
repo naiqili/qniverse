@@ -76,7 +76,6 @@ class MTSDatasetH(DatasetH):
         segments (dict): data split segments
         seq_len (int): time series sequence length
         horizon (int): label horizon (to mask historical loss for TRA)
-        num_states (int): how many memory states to be added (for TRA)
         batch_size (int): batch size (<0 means daily batch)
         shuffle (bool): whether shuffle data
         pin_memory (bool): whether pin data to gpu memory
@@ -89,7 +88,6 @@ class MTSDatasetH(DatasetH):
         segments,
         seq_len=20,
         horizon=10,
-        num_states=1,
         batch_size=-1,
         shuffle=True,
         pin_memory=False,
@@ -101,7 +99,6 @@ class MTSDatasetH(DatasetH):
 
         self.seq_len = seq_len
         self.horizon = horizon
-        self.num_states = num_states
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.drop_last = drop_last
@@ -125,7 +122,7 @@ class MTSDatasetH(DatasetH):
         self._index = df.index
 
         # add memory to feature
-        self._data = np.c_[self._data, np.zeros((len(self._data), self.num_states), dtype=np.float32)]
+        self._data = np.c_[self._data, np.zeros((len(self._data), 1), dtype=np.float32)]
 
         # padding tensor
         self.zeros = np.zeros((self.seq_len, self._data.shape[1]), dtype=np.float32)
@@ -188,10 +185,10 @@ class MTSDatasetH(DatasetH):
         elif isinstance(vals, torch.Tensor):
             vals = vals.detach().cpu().numpy()
             index = index.detach().cpu().numpy()
-        self._data[index, -self.num_states :] = vals
+        self._data[index, -1. :] = vals
 
     def clear_memory(self):
-        self._data[:, -self.num_states :] = 0
+        self._data[:, -1 :] = 0
 
     # TODO: better train/eval mode design
     def train(self):
@@ -242,8 +239,7 @@ class MTSDatasetH(DatasetH):
                         _data = torch.cat([self.zeros[: self.seq_len - len(_data)], _data], axis=0)
                     else:
                         _data = np.concatenate([self.zeros[: self.seq_len - len(_data)], _data], axis=0)
-                if self.num_states > 0:
-                    _data[-self.horizon :, -self.num_states :] = 0
+                _data[-self.horizon :, -1 :] = 0
                 data.append(_data)
                 label.append(self._label[slc.stop - 1])
                 index.append(slc.stop - 1)
