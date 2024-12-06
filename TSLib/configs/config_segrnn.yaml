@@ -1,0 +1,62 @@
+qlib_init:
+  provider_uri: "~/.qlib/qlib_data/cn_data"
+  region: cn
+
+data_loader_config: &data_loader_config
+  class: StaticDataLoader
+  module_path: qlib.data.dataset.loader
+  kwargs:
+    config:
+      feature: /data1/liupeiyuan/ts_self/QTSLib/data/HS1024fea.pkl
+      label: /data1/liupeiyuan/ts_self/QTSLib/data/HS1024lab.pkl
+
+model_config: &model_config
+  seq_len: 20
+  pred_len: 1
+  e_layers: 2
+  factor: 3
+  enc_in: 5
+  top_k: 2
+  c_out: 1
+  d_model: 64
+  d_ff: 32
+  n_heads: 4
+  num_kernels: 6
+  dropout: 0.1
+  seg_len: 1
+  activation: 'gelu'
+
+
+task:
+  model:
+    class: QniverseModel
+    module_path: src/model_backbone.py
+    kwargs:
+      lr: 0.0001
+      n_epochs: 1000
+      max_steps_per_epoch: 100
+      early_stop: 3
+      seed: 2024
+      logdir: output/hs1124/segrnn
+      model_type: SegRNN
+      model_config: *model_config
+      lamb: 1.0
+      rho: 0.99
+      freeze_model: False
+      model_init_state:
+  dataset:
+    class: MTSDatasetH
+    module_path: src/dataset.py
+    kwargs:
+      handler:
+        class: DataHandler
+        module_path: qlib.data.dataset.handler
+        kwargs:
+          data_loader: *data_loader_config
+      segments:
+        train: [ 2018-01-01, 2021-12-31 ]
+        valid: [ 2022-01-01, 2022-12-31 ]
+        test: [ 2023-01-01, 2023-12-31 ]
+      seq_len: 20
+      horizon: 1
+      batch_size: 512

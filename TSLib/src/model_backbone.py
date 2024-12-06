@@ -26,6 +26,10 @@ from qlib.contrib.report.analysis_model.analysis_model_performance import ic_fig
 from src.WFTNet import WFTNet
 from src.TimeBridge import TimeBridge
 from src.PDF import PDF
+from src.PatchTST import PatchTST
+from src.TimeMixer import TimeMixer
+from src.TimesNet import TimesNet
+from src.SegRNN import SegRNN
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
