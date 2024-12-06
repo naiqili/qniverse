@@ -13,18 +13,16 @@ data_loader_config: &data_loader_config
 model_config: &model_config
   seq_len: 20
   pred_len: 1
-  e_layers: 1
-  d_layers: 1
-  factor: 3
+  e_layers: 2
+  t_layers: 2
+  period: 5
   enc_in: 5
   dec_in: 5
   c_out: 1
   d_model: 64
   d_ff: 32
-  top_k:  0
-  wavelet_scale: 4
-  period_coeff: 0.05
-  num_kernels: 6
+  n_heads:  4
+  activation: 'gelu'
   dropout: 0.1
 
 task:
@@ -37,8 +35,8 @@ task:
       max_steps_per_epoch: 100
       early_stop: 3
       seed: 2024
-      logdir: output/hs1124/wftnet
-      model_type: WFTNet
+      logdir: output/hs1124/timebridge
+      model_type: TimeBridge
       model_config: *model_config
       lamb: 1.0
       rho: 0.99
