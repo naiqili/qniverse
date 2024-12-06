@@ -199,7 +199,6 @@ class WFTNet(nn.Module):
         super(WFTNet, self).__init__()
         self.configs = configs
         self.seq_len = configs.seq_len
-        self.label_len = configs.label_len
         self.pred_len = configs.pred_len
         self.layer = configs.e_layers
         self.wavelet_model = nn.ModuleList([Wavelet(configs) for _ in range(configs.e_layers)])
