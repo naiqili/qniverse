@@ -19,7 +19,17 @@ from qlib.model.base import Model
 
 from types import SimpleNamespace
 
+# vis
+import plotly
+from qlib.contrib.report.analysis_model.analysis_model_performance import ic_figure, model_performance_graph
+
 from src.WFTNet import WFTNet
+from src.TimeBridge import TimeBridge
+from src.PDF import PDF
+from src.PatchTST import PatchTST
+from src.TimeMixer import TimeMixer
+from src.TimesNet import TimesNet
+from src.SegRNN import SegRNN
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -53,6 +63,7 @@ class QniverseModel(Model):
         self.logger = get_module_logger("Qniverse")
         self.logger.info("Qniverse Model...")
 
+        self.model_type = model_type
         self.model = eval(model_type)(SimpleNamespace(**model_config)).to(device)
         if model_init_state:
             self.model.load_state_dict(torch.load(model_init_state, map_location="cpu")["model"])
@@ -175,7 +186,7 @@ class QniverseModel(Model):
         return metrics, preds
 
     def fit(self, dataset, evals_result=dict()):
-
+        
         train_set, valid_set, test_set = dataset.prepare(["train", "valid", "test"])
 
         best_score = -1
@@ -245,6 +256,14 @@ class QniverseModel(Model):
             )
 
             torch.save(best_params, self.logdir + "/model.bin")
+
+            fig_list = model_performance_graph(preds, show_notebook=False)
+            fig_name = [f"{self.model_type}_cumulative_return", f"{self.model_type}_distribution_return", f"{self.model_type}_IC",
+                        f"{self.model_type}_monthly_IC", f"{self.model_type}_distribution_IC", f"{self.model_type}_auto_corr"]
+            for i, fig in enumerate(fig_list):
+                fig: plotly.graph_objs.Figure = fig
+                fig.write_image(self.logdir + f'/{fig_name[i]}.jpg')
+            print("Vis Finished!")
 
             preds.to_pickle(self.logdir + "/pred.pkl")
 

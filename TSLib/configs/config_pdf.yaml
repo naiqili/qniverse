@@ -1,0 +1,69 @@
+qlib_init:
+  provider_uri: "~/.qlib/qlib_data/cn_data"
+  region: cn
+
+data_loader_config: &data_loader_config
+  class: StaticDataLoader
+  module_path: qlib.data.dataset.loader
+  kwargs:
+    config:
+      feature: data/HS1124fea.pkl
+      label: data/HS1124lab.pkl
+
+model_config: &model_config
+  seq_len: 20
+  pred_len: 1
+  e_layers: 2
+  enc_in: 5
+  dec_in: 5
+  c_out: 1
+  d_model: 64
+  d_ff: 32
+  n_heads: 4
+  activation: 'gelu'
+  kernel_list: [3, 7, 9, 11]
+  period: [2, 4]
+  patch_len: [4, 5, 10]
+  stride: [2, 3, 4]
+  dropout: 0.1
+  fc_dropout: 0.1
+  head_dropout: 0.1
+  affine: True
+  add: False
+  wo_conv: False
+  serial_conv: False
+  subtract_last: 0
+
+task:
+  model:
+    class: QniverseModel
+    module_path: src/model_backbone.py
+    kwargs:
+      lr: 0.0001
+      n_epochs: 1000
+      max_steps_per_epoch: 100
+      early_stop: 3
+      seed: 2024
+      logdir: output/hs1124/pdf
+      model_type: PDF
+      model_config: *model_config
+      lamb: 1.0
+      rho: 0.99
+      freeze_model: False
+      model_init_state:
+  dataset:
+    class: MTSDatasetH
+    module_path: src/dataset.py
+    kwargs:
+      handler:
+        class: DataHandler
+        module_path: qlib.data.dataset.handler
+        kwargs:
+          data_loader: *data_loader_config
+      segments:
+        train: [ 2018-01-01, 2021-12-31 ]
+        valid: [ 2022-01-01, 2022-12-31 ]
+        test: [ 2023-01-01, 2023-12-31 ]
+      seq_len: 20
+      horizon: 1
+      batch_size: 512

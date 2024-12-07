@@ -7,12 +7,11 @@ data_loader_config: &data_loader_config
   module_path: qlib.data.dataset.loader
   kwargs:
     config:
-      feature: /data1/liupeiyuan/ts_self/QTSLib/data/HS1024fea.pkl
-      label: /data1/liupeiyuan/ts_self/QTSLib/data/HS1024lab.pkl
+      feature: data/HS1124fea.pkl
+      label: data/HS1124lab.pkl
 
 model_config: &model_config
   seq_len: 20
-  label_len: 48
   pred_len: 1
   e_layers: 1
   d_layers: 1
@@ -28,14 +27,6 @@ model_config: &model_config
   num_kernels: 6
   dropout: 0.1
 
-num_states: &num_states 1
-
-tra_config: &tra_config
-  num_states: *num_states
-  hidden_size: 16
-  tau: 1.0
-  src_info: LR_TPE
-
 task:
   model:
     class: QniverseModel
@@ -46,10 +37,9 @@ task:
       max_steps_per_epoch: 100
       early_stop: 3
       seed: 2024
-      logdir: output/HS1124fea/wftnet
+      logdir: output/hs1124/wftnet
       model_type: WFTNet
       model_config: *model_config
-      tra_config: *tra_config
       lamb: 1.0
       rho: 0.99
       freeze_model: False
@@ -69,5 +59,4 @@ task:
         test: [ 2023-01-01, 2023-12-31 ]
       seq_len: 20
       horizon: 1
-      num_states: *num_states
       batch_size: 512
