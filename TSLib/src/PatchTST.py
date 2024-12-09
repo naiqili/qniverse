@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 class EncoderLayer(nn.Module):
-    def __init__(self, attention, d_model, d_ff=None, dropout=0.1, activation="relu"):
+    def __init__(self, attention, d_model, d_ff=None, dropout=0.1, activation="gelu"):
         super(EncoderLayer, self).__init__()
         d_ff = d_ff or 4 * d_model
         self.attention = attention
@@ -240,7 +240,7 @@ class PatchTST(nn.Module):
                     activation=configs.activation
                 ) for l in range(configs.e_layers)
             ],
-            norm_layer=nn.Sequential(Transpose(1,2), nn.BatchNorm1d(configs.d_model), Transpose(1,2))
+            # norm_layer=nn.Sequential(Transpose(1,2), nn.BatchNorm1d(configs.d_model), Transpose(1,2))
         )
 
         # Prediction Head
@@ -250,7 +250,11 @@ class PatchTST(nn.Module):
         self.head = FlattenHead(configs.enc_in, self.head_nf, configs.pred_len,
                                     head_dropout=configs.dropout)
         
-        self.projection = nn.Linear(configs.enc_in, configs.c_out, bias=True)
+        self.projection = nn.Sequential(
+            nn.Linear(configs.enc_in, configs.enc_in // 4, bias=True),
+            nn.GELU(),
+            nn.Linear(configs.enc_in // 4, configs.c_out, bias=True),
+        )
 
     def forecast(self, x_enc):
         # Normalization from Non-stationary Transformer
@@ -264,7 +268,6 @@ class PatchTST(nn.Module):
         x_enc = x_enc.permute(0, 2, 1)
         # u: [bs * nvars x patch_num x d_model]
         enc_out, n_vars = self.patch_embedding(x_enc)
-
         # Encoder
         # z: [bs * nvars x patch_num x d_model]
         enc_out, attns = self.encoder(enc_out)
@@ -277,7 +280,6 @@ class PatchTST(nn.Module):
         # Decoder
         dec_out = self.head(enc_out)  # z: [bs x nvars x target_window]
         dec_out = dec_out.permute(0, 2, 1)
-
         dec_out = self.projection(dec_out)
 
         # De-Normalization from Non-stationary Transformer

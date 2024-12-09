@@ -3,10 +3,14 @@ import argparse
 import qlib
 import ruamel.yaml as yaml
 from qlib.utils import init_instance_by_config
+from src.dataset import MTSDatasetH
+from lilab.qlib.backtest.benchmark import *
+import warnings
+warnings.filterwarnings('ignore')
 import os,sys
 os.chdir(sys.path[0])
 
-# python example.py --config_file configs/config_wftnet.yaml
+# python train.py --config_file configs/config_wftnet.yaml
 
 def main(seed, config_file="configs/config_wftnet.yaml"):
 
@@ -26,7 +30,15 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
         region=config["qlib_init"]["region"],
 
     )
-    dataset = init_instance_by_config(config["task"]["dataset"])
+
+    benchmark = eval(config["task"]["qlib_dataset"]["class"])(**config["task"]["qlib_dataset"]["kwargs"])
+    dataset = init_instance_by_config(benchmark.dataset_config)
+    config["task"]["dataset"]["kwargs"]["handler"] = dataset.handler
+    config["task"]["dataset"]["kwargs"]["segments"] = dataset.segments
+    print(dataset.segments)
+    # origin data -> MTS DataLoader
+    dataset = eval(config["task"]["dataset"]["class"])(**config["task"]["dataset"]["kwargs"])
+    # dataset = init_instance_by_config(config["task"]["dataset"])
     model = init_instance_by_config(config["task"]["model"])
 
     # train model

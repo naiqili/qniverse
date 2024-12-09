@@ -21,7 +21,7 @@ from types import SimpleNamespace
 
 # vis
 import plotly
-from qlib.contrib.report.analysis_model.analysis_model_performance import ic_figure, model_performance_graph
+from qlib.contrib.report.analysis_model.analysis_model_performance import model_performance_graph
 
 from src.WFTNet import WFTNet
 from src.TimeBridge import TimeBridge
@@ -47,8 +47,6 @@ class QniverseModel(Model):
             max_steps_per_epoch=None,
             freeze_model=False,
             model_init_state=None,
-            lamb=0.0,
-            rho=0.99,
             seed=None,
             logdir=None,
             eval_train=True,
@@ -81,8 +79,6 @@ class QniverseModel(Model):
         self.early_stop = early_stop
         self.smooth_steps = smooth_steps
         self.max_steps_per_epoch = max_steps_per_epoch
-        self.lamb = lamb
-        self.rho = rho
         self.seed = seed
         self.logdir = logdir
         self.eval_train = eval_train
@@ -275,8 +271,6 @@ class QniverseModel(Model):
                     "early_stop": self.early_stop,
                     "smooth_steps": self.smooth_steps,
                     "max_steps_per_epoch": self.max_steps_per_epoch,
-                    "lamb": self.lamb,
-                    "rho": self.rho,
                     "seed": self.seed,
                     "logdir": self.logdir,
                 },
