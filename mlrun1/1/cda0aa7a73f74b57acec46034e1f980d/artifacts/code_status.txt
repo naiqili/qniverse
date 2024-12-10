@@ -1,0 +1,19 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ../LiLab/LiLab.egg-info/SOURCES.txt
+	modified:   ../LiLab/lilab/qlib/backtest/benchmark.py
+	modified:   configs/config_patchtst.yaml
+	modified:   src/PatchTST.py
+	modified:   src/model_backbone.py
+	modified:   train.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	plot_image.jpg
+	../mlrun1/
+
+no changes added to commit (use "git add" and/or "git commit -a")

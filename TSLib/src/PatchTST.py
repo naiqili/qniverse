@@ -258,11 +258,11 @@ class PatchTST(nn.Module):
 
     def forecast(self, x_enc):
         # Normalization from Non-stationary Transformer
-        # means = x_enc.mean(1, keepdim=True).detach()
-        # x_enc = x_enc - means
-        # stdev = torch.sqrt(
-        #     torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
-        # x_enc /= stdev
+        means = x_enc.mean(1, keepdim=True).detach()
+        x_enc = x_enc - means
+        stdev = torch.sqrt(
+            torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        x_enc /= stdev
 
         # do patching and embedding
         x_enc = x_enc.permute(0, 2, 1)
@@ -281,6 +281,9 @@ class PatchTST(nn.Module):
         dec_out = self.head(enc_out)  # z: [bs x nvars x target_window]
         dec_out = dec_out.permute(0, 2, 1)
         dec_out = self.projection(dec_out)
+
+        # if torch.isnan(dec_out).any():
+        #     breakpoint()
 
         # De-Normalization from Non-stationary Transformer
         # dec_out = dec_out * \

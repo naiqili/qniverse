@@ -3,6 +3,8 @@ import argparse
 import qlib
 import ruamel.yaml as yaml
 from qlib.utils import init_instance_by_config
+from qlib.workflow import R
+from qlib.workflow.record_temp import SignalRecord, PortAnaRecord
 from src.dataset import MTSDatasetH
 from lilab.qlib.backtest.benchmark import *
 import warnings
@@ -41,9 +43,75 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
     # dataset = init_instance_by_config(config["task"]["dataset"])
     model = init_instance_by_config(config["task"]["model"])
 
-    # train model
-    model.fit(dataset)
+    # model.fit(dataset)
 
+    TOPK = 10
+    NDROP = 2
+    HT = 10
+
+    strategy_config = {
+        "class": "TopkDropoutStrategy",
+        "module_path": "qlib.contrib.strategy.signal_strategy",
+        "kwargs": {
+            "model": model,
+            "dataset": dataset,
+            "topk": TOPK,
+            "n_drop": NDROP,
+            "hold_thresh": HT,
+        },
+    }
+
+    # model.fit(dataset)
+    EXP_NAME = 'PatchTST'
+    URI = '/home/linq/finance/qniverse/mlrun1'
+
+    with R.start(experiment_name=EXP_NAME, uri=URI):
+        model.fit(dataset)
+        R.save_objects(trained_model=model)
+        rid = R.get_recorder().id
+        print(rid)
+
+    port_analysis_config = {
+        "executor": benchmark.executor_config,
+        "strategy": strategy_config,
+        "backtest": benchmark.backtest_config
+    }
+
+    # backtest and analysis
+    with R.start(experiment_name=EXP_NAME, uri=URI):
+        recorder = R.get_recorder(recorder_id=rid)
+        model = recorder.load_object("trained_model")
+
+        # prediction
+        recorder = R.get_recorder(recorder_id=rid)
+        ba_rid = recorder.id
+        sr = SignalRecord(model, dataset, recorder)
+        sr.generate()
+
+        # backtest & analysis
+        par = PortAnaRecord(recorder, port_analysis_config, "day")
+        par.generate()
+
+    from qlib.contrib.report import analysis_model, analysis_position
+
+    # load record
+    with R.start(experiment_name=EXP_NAME, uri=URI):
+        recorder = R.get_recorder(recorder_id=rid)
+        pred_df = recorder.load_object("pred.pkl")
+        report_normal_df = recorder.load_object("portfolio_analysis/report_normal_1day.pkl")
+        positions = recorder.load_object("portfolio_analysis/positions_normal_1day.pkl")
+        analysis_df = recorder.load_object("portfolio_analysis/port_analysis_1day.pkl")
+
+        # 不知道在做什么
+        # label_df = dataset.prepare("test", col_set="label") # 返回的为什么是MTSDatasetH而不是df
+        # label_df.columns = ["label"]
+        # pred_label = pd.concat([label_df, pred_df], axis=1, sort=True).reindex(label_df.index)
+        # recorder.save_objects(artifact_path='portfolio_analysis', **{'pred_label.pkl':pred_label})
+        # print(recorder)
+
+    # analysis
+    fig = analysis_position.report_graph(report_normal_df, show_notebook=False)[0]
+    fig.write_image("plot_image.jpg", format='jpeg')
 
 
 if __name__ == "__main__":

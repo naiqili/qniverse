@@ -23,10 +23,10 @@ task:
     class: QniverseModel
     module_path: src/model_backbone.py
     kwargs:
-      lr: 0.0001
-      n_epochs: 1000
-      max_steps_per_epoch: 100
-      early_stop: 3
+      lr: 0.0005
+      n_epochs: 5
+      # max_steps_per_epoch: None
+      early_stop: 5
       seed: 2024
       logdir: output/patchtst
       model_type: PatchTST
@@ -40,7 +40,7 @@ task:
       horizon: 1
       batch_size: 32
   qlib_dataset:
-    class: BENCH_B
+    class: BENCH_A
     kwargs:
       market: csi300
       benchmark: SH000300 

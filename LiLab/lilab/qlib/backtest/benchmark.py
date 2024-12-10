@@ -44,7 +44,17 @@ class BENCHBase:
             "fit_start_time": fit_time_split[0],
             "fit_end_time": fit_time_split[1],
             "instruments": self.instruments,
-            "label": self.label_code
+            "label": self.label_code,            
+            # 'infer_processors': [
+            #     {
+            #     'class': 'Fillna',
+            #     }
+            # ],
+            # 'learn_processors':  [
+            #     {
+            #     'class': 'Fillna',
+            #     }
+            # ],
         }
 
         if feat == "Alpha158":
@@ -97,7 +107,6 @@ class BENCHBase:
             },
         }
 
-
 class BENCH_A(BENCHBase):
     def __init__(self, 
                  time_span=("2010-01-01","2024-09-01"),
@@ -149,6 +158,106 @@ class BENCH_C(BENCHBase):
                  **kwargs
                  ):
         super(BENCH_C, self).__init__(
+                 time_span,
+                 fit_time_split,
+                 train_split,
+                 valid_split,
+                 test_split,
+                 backtest_split,
+                 **kwargs
+        )
+        
+class BENCH_NOW(BENCHBase):
+    def __init__(self, 
+                 time_span=("2005-01-01","2024-12-01"),
+                 fit_time_split=("2005-01-01","2024-12-01"),
+                 train_split=("2005-01-01","2020-01-01"),
+                 valid_split=("2020-01-01","2024-11-01"),
+                 test_split=("2024-11-01", "2024-12-01"),
+                 backtest_split=("2024-11-01", "2024-12-01"),
+                 **kwargs
+                 ):
+        super(BENCH_NOW, self).__init__(
+                 time_span,
+                 fit_time_split,
+                 train_split,
+                 valid_split,
+                 test_split,
+                 backtest_split,
+                 **kwargs
+        )
+
+class BENCH_Set1(BENCHBase):
+    def __init__(self, 
+                 time_span=("2020-01-01","2024-11-01"),
+                 fit_time_split=("2020-01-01","2024-11-01"),
+                 train_split=("2020-01-01","2024-11-01"),
+                 valid_split=("2020-01-01","2024-11-01"),
+                 test_split=("2020-01-01","2024-11-01"),
+                 backtest_split=("2024-11-01","2024-12-01"),
+                 **kwargs
+                 ):
+        super(BENCH_Set1, self).__init__(
+                 time_span,
+                 fit_time_split,
+                 train_split,
+                 valid_split,
+                 test_split,
+                 backtest_split,
+                 **kwargs
+        )
+
+class BENCH_Set2(BENCHBase):
+    def __init__(self, 
+                 time_span=("2015-01-01","2020-01-01"),
+                 fit_time_split=("2015-01-01","2020-01-01"),
+                 train_split=("2015-01-01","2020-01-01"),
+                 valid_split=("2015-01-01","2020-01-01"),
+                 test_split=("2015-01-01","2020-01-01"),
+                 backtest_split=("2020-01-01","2021-01-01"),
+                 **kwargs
+                 ):
+        super(BENCH_Set2, self).__init__(
+                 time_span,
+                 fit_time_split,
+                 train_split,
+                 valid_split,
+                 test_split,
+                 backtest_split,
+                 **kwargs
+        )
+
+class BENCH_Set3(BENCHBase):
+    def __init__(self, 
+                 time_span=("2010-01-01","2015-01-01"),
+                 fit_time_split=("2010-01-01","2015-01-01"),
+                 train_split=("2010-01-01","2015-01-01"),
+                 valid_split=("2010-01-01","2015-01-01"),
+                 test_split=("2010-01-01","2015-01-01"),
+                 backtest_split=("2015-01-01","2016-01-01"),
+                 **kwargs
+                 ):
+        super(BENCH_Set3, self).__init__(
+                 time_span,
+                 fit_time_split,
+                 train_split,
+                 valid_split,
+                 test_split,
+                 backtest_split,
+                 **kwargs
+        )
+
+class BENCH_Set4(BENCHBase):
+    def __init__(self, 
+                 time_span=("2005-01-01","2010-01-01"),
+                 fit_time_split=("2005-01-01","2010-01-01"),
+                 train_split=("2005-01-01","2010-01-01"),
+                 valid_split=("2005-01-01","2010-01-01"),
+                 test_split=("2005-01-01","2010-01-01"),
+                 backtest_split=("2010-01-01","2011-01-01"),
+                 **kwargs
+                 ):
+        super(BENCH_Set3, self).__init__(
                  time_span,
                  fit_time_split,
                  train_split,

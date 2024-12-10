@@ -1,0 +1,15 @@
+artifact_uri: /home/linq/finance/qniverse/mlrun1/1/ed17c32facef4e3ebe0d47efee9021b0/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: active
+run_id: ed17c32facef4e3ebe0d47efee9021b0
+run_name: mlflow_recorder
+run_uuid: ed17c32facef4e3ebe0d47efee9021b0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1733836196528
+status: 1
+tags: []
+user_id: linq

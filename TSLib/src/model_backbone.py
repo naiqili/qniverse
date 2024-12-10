@@ -99,9 +99,13 @@ class QniverseModel(Model):
 
         data_set.train()
 
-        max_steps = self.n_epochs
+        # max_steps = self.n_epochs
+        # if self.max_steps_per_epoch is not None:
+        #     max_steps = min(self.max_steps_per_epoch, self.n_epochs)
+        data_set.setup_data()
+        max_steps = len(data_set)
         if self.max_steps_per_epoch is not None:
-            max_steps = min(self.max_steps_per_epoch, self.n_epochs)
+            max_steps = min(self.max_steps_per_epoch, max_steps)
 
         count = 0
         total_loss = 0
@@ -117,11 +121,18 @@ class QniverseModel(Model):
             data, label, index = batch["data"], batch["label"], batch["index"]
 
             feature = data[:, :, : -1]
+            
+            feature = torch.nan_to_num(feature, nan=0.0)
+            label = torch.nan_to_num(label, nan=0.0)
 
             # feature [batch_size, seq_len, num_fea]
             pred = self.model(feature).squeeze()
+            
+            pred = torch.nan_to_num(pred, nan=0.0)
+
             # pred [batch_size, horizon]
             loss = (pred - label).pow(2).mean()
+            # print(pred, label)
 
             loss.backward()
             self.optimizer.step()
@@ -147,9 +158,11 @@ class QniverseModel(Model):
             feature = data[:, :, : -1]
             hist_loss = data[:, : -data_set.horizon, -1:]
 
+            feature = torch.nan_to_num(feature, nan=0.0)
+            label = torch.nan_to_num(label, nan=0.0)
             with torch.no_grad():
                 pred = self.model(feature).squeeze()
-
+                pred = torch.nan_to_num(pred, nan=0.0)
 
             X = np.c_[
                 pred.cpu().numpy(),
