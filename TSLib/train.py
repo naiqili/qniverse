@@ -102,13 +102,6 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
         positions = recorder.load_object("portfolio_analysis/positions_normal_1day.pkl")
         analysis_df = recorder.load_object("portfolio_analysis/port_analysis_1day.pkl")
 
-        # 不知道在做什么
-        # label_df = dataset.prepare("test", col_set="label") # 返回的为什么是MTSDatasetH而不是df
-        # label_df.columns = ["label"]
-        # pred_label = pd.concat([label_df, pred_df], axis=1, sort=True).reindex(label_df.index)
-        # recorder.save_objects(artifact_path='portfolio_analysis', **{'pred_label.pkl':pred_label})
-        # print(recorder)
-
     # analysis
     fig = analysis_position.report_graph(report_normal_df, show_notebook=False)[0]
     fig.write_image("plot_image.jpg", format='jpeg')

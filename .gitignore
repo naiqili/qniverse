@@ -10,3 +10,4 @@ result/
 .DS_Store
 *.log
 private/
+mlrun1/

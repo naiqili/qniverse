@@ -48,7 +48,7 @@ class RevIN(nn.Module):
         if self.subtract_last:
             self.last = x[:, -1, :].unsqueeze(1)
         else:
-            self.mean = torch.mean(x, dim=dim2reduce, keepdim=True).detach()  # 沿时间维度求平均，得到各通道的时间均值
+            self.mean = torch.mean(x, dim=dim2reduce, keepdim=True).detach()
         self.stdev = torch.sqrt(torch.var(x, dim=dim2reduce, keepdim=True, unbiased=False) + self.eps).detach()
 
     def _normalize(self, x):
@@ -320,9 +320,9 @@ class PDF_backbone(nn.Module):
 
         # denorm
         z = self.head(res)
-        z = z.permute(0, 2, 1)
-        z = self.revin_layer(z, 'denorm')
-        z = z.permute(0, 2, 1)
+        # z = z.permute(0, 2, 1)
+        # z = self.revin_layer(z, 'denorm')
+        # z = z.permute(0, 2, 1)
         return z
 
 class Head(nn.Module):

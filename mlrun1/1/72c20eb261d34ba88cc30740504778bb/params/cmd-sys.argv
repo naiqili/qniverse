@@ -1,1 +1,0 @@
-train.py --config_file configs/config_patchtst.yaml

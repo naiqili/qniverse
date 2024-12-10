@@ -465,6 +465,11 @@ class TimeMixer(nn.Module):
         return dec_out_list
 
     def forecast(self, x_enc):
+        means = x_enc.mean(1, keepdim=True).detach()
+        x_enc = x_enc - means
+        stdev = torch.sqrt(
+            torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        x_enc /= stdev
 
         x_enc = self.__multi_scale_process_inputs(x_enc)
 
