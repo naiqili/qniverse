@@ -305,6 +305,12 @@ class TimeBridge(nn.Module):
             else [*layer_p1, layer_d, *layer_c]
 
     def forecast(self, x):
+        means = x.mean(1, keepdim=True).detach()
+        x = x - means
+        stdev = torch.sqrt(
+            torch.var(x, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        x /= stdev
+
         x_mark = torch.zeros((*x.shape[:-1], 4), device=x.device)
         x = self.embedding(x, x_mark)
         x = self.encoder(x)[0][:, :self.c_in, ...]

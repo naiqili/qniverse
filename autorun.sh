@@ -40,4 +40,12 @@ else
     git add .
     git commit -m $ED
     git push
+
+    
+    cd /home/linq/finance/private
+    jupyter nbconvert --to notebook --execute --inplace realworld_position_maker.ipynb
+    git add .
+    git commit -m $ED
+    git push
+
 fi

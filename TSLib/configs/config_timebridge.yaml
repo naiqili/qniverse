@@ -1,14 +1,6 @@
 qlib_init:
-  provider_uri: "~/.qlib/qlib_data/cn_data"
+  provider_uri: "/data/linq/.qlib/qlib_data/cn_data"
   region: cn
-
-data_loader_config: &data_loader_config
-  class: StaticDataLoader
-  module_path: qlib.data.dataset.loader
-  kwargs:
-    config:
-      feature: data/HS1124fea.pkl
-      label: data/HS1124lab.pkl
 
 model_config: &model_config
   seq_len: 20
@@ -16,8 +8,8 @@ model_config: &model_config
   e_layers: 2
   t_layers: 2
   period: 5
-  enc_in: 5
-  dec_in: 5
+  enc_in: 360
+  dec_in: 360
   c_out: 1
   d_model: 64
   d_ff: 32
@@ -25,36 +17,32 @@ model_config: &model_config
   activation: 'gelu'
   dropout: 0.1
 
+
 task:
   model:
     class: QniverseModel
     module_path: src/model_backbone.py
     kwargs:
       lr: 0.0001
-      n_epochs: 1000
-      max_steps_per_epoch: 100
-      early_stop: 3
+      n_epochs: 1
+      max_steps_per_epoch: 1000
+      early_stop: 1
       seed: 2024
       logdir: output/hs1124/timebridge
       model_type: TimeBridge
       model_config: *model_config
-      lamb: 1.0
-      rho: 0.99
       freeze_model: False
       model_init_state:
   dataset:
     class: MTSDatasetH
-    module_path: src/dataset.py
     kwargs:
-      handler:
-        class: DataHandler
-        module_path: qlib.data.dataset.handler
-        kwargs:
-          data_loader: *data_loader_config
-      segments:
-        train: [ 2018-01-01, 2021-12-31 ]
-        valid: [ 2022-01-01, 2022-12-31 ]
-        test: [ 2023-01-01, 2023-12-31 ]
       seq_len: 20
       horizon: 1
-      batch_size: 512
+      batch_size: 32
+  qlib_dataset:
+    class: BENCH_LPY
+    kwargs:
+      market: csi300
+      benchmark: SH000300 
+      feat: Alpha360
+      label: r1

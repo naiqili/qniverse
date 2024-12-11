@@ -77,6 +77,13 @@ class SegRNN(nn.Module):
     def encoder(self, x):
         # b:batch_size c:channel_size s:seq_len s:seq_len
         # d:d_model w:seg_len n:seg_num_x m:seg_num_y
+        
+        means = x.mean(1, keepdim=True).detach()
+        x = x - means
+        stdev = torch.sqrt(
+            torch.var(x, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        x /= stdev
+        
         batch_size = x.size(0)
 
         x = x.permute(0, 2, 1) # b,c,s

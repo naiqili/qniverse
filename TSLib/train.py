@@ -62,13 +62,16 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
     }
 
     # model.fit(dataset)
-    EXP_NAME = 'PatchTST'
-    URI = '/home/linq/finance/qniverse/mlrun1'
+    EXP_NAME = config["task"]["model"]['kwargs']['model_type']
+    URI = '/home/linq/finance/qniverse/mlrun'
 
     with R.start(experiment_name=EXP_NAME, uri=URI):
         model.fit(dataset)
         R.save_objects(trained_model=model)
         rid = R.get_recorder().id
+        print(rid)
+        print(rid)
+        print(rid)
         print(rid)
 
     port_analysis_config = {
@@ -85,6 +88,7 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
         # prediction
         recorder = R.get_recorder(recorder_id=rid)
         ba_rid = recorder.id
+        print("**** ", ba_rid)
         sr = SignalRecord(model, dataset, recorder)
         sr.generate()
 
@@ -104,7 +108,7 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
 
     # analysis
     fig = analysis_position.report_graph(report_normal_df, show_notebook=False)[0]
-    fig.write_image("plot_image.jpg", format='jpeg')
+    fig.write_image(f"plot_image_{EXP_NAME}.jpg", format='jpeg')
 
 
 if __name__ == "__main__":

@@ -180,7 +180,7 @@ class Wavelet(nn.Module):
 
         if len(res) > 0:
             
-            res = (1 - self.period_coeff ** 10) * wavelet_res + (self.period_coeff ** 10) * torch.sum(res * period_weight, -1)
+            res = (1 - self.period_coeff) * wavelet_res + (self.period_coeff) * torch.sum(res * period_weight, -1)
 
         else:
             res = wavelet_res
@@ -214,6 +214,12 @@ class WFTNet(nn.Module):
         self.projection = nn.Linear(configs.d_model, configs.c_out, bias=True)
 
     def forecast(self, x_enc):
+        means = x_enc.mean(1, keepdim=True).detach()
+        x_enc = x_enc - means
+        stdev = torch.sqrt(
+            torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
+        x_enc /= stdev
+
         # embedding
         enc_out = self.enc_embedding(x_enc)  # [B,T,C]
         enc_out = self.predict_linear(enc_out.permute(0, 2, 1)).permute(

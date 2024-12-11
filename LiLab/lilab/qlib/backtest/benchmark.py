@@ -47,12 +47,12 @@ class BENCHBase:
             "label": self.label_code,            
             # 'infer_processors': [
             #     {
-            #     'class': 'Fillna',
+            #     'class': 'CSZFillna',
             #     }
             # ],
             # 'learn_processors':  [
             #     {
-            #     'class': 'Fillna',
+            #     'class': 'CSZFillna',
             #     }
             # ],
         }
@@ -110,7 +110,7 @@ class BENCHBase:
 class BENCH_A(BENCHBase):
     def __init__(self, 
                  time_span=("2010-01-01","2024-09-01"),
-                 fit_time_split=("2010-01-01","2020-12-31"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2010-01-01", "2018-12-31"),
                  valid_split=("2019-01-01", "2020-12-31"),
                  test_split=("2021-01-01", "2024-09-01"),
@@ -130,7 +130,7 @@ class BENCH_A(BENCHBase):
 class BENCH_B(BENCHBase):
     def __init__(self, 
                  time_span=("2005-01-01","2021-01-01"),
-                 fit_time_split=("2005-01-01","2013-12-31"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2005-01-01", "2013-12-31"),
                  valid_split=("2014-01-01", "2015-12-31"),
                  test_split=("2016-01-01", "2021-01-01"),
@@ -150,7 +150,7 @@ class BENCH_B(BENCHBase):
 class BENCH_C(BENCHBase):
     def __init__(self, 
                  time_span=("2005-01-01","2016-01-01"),
-                 fit_time_split=("2005-01-01","2008-12-31"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2005-01-01", "2008-12-31"),
                  valid_split=("2009-01-01", "2010-12-31"),
                  test_split=("2011-01-01", "2016-01-01"),
@@ -167,10 +167,30 @@ class BENCH_C(BENCHBase):
                  **kwargs
         )
         
+class BENCH_LPY(BENCHBase):
+    def __init__(self, 
+                 time_span=("2017-01-01","2024-01-01"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
+                 train_split=("2017-01-01", "2021-12-31"),
+                 valid_split=("2022-01-01", "2022-12-31"),
+                 test_split=("2023-01-01", "2024-01-01"),
+                 backtest_split=("2023-01-01", "2024-01-01"),
+                 **kwargs
+                 ):
+        super(BENCH_LPY, self).__init__(
+                 time_span,
+                 fit_time_split,
+                 train_split,
+                 valid_split,
+                 test_split,
+                 backtest_split,
+                 **kwargs
+        )
+        
 class BENCH_NOW(BENCHBase):
     def __init__(self, 
                  time_span=("2005-01-01","2024-12-01"),
-                 fit_time_split=("2005-01-01","2024-12-01"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2005-01-01","2020-01-01"),
                  valid_split=("2020-01-01","2024-11-01"),
                  test_split=("2024-11-01", "2024-12-01"),
@@ -190,7 +210,7 @@ class BENCH_NOW(BENCHBase):
 class BENCH_Set1(BENCHBase):
     def __init__(self, 
                  time_span=("2020-01-01","2024-11-01"),
-                 fit_time_split=("2020-01-01","2024-11-01"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2020-01-01","2024-11-01"),
                  valid_split=("2020-01-01","2024-11-01"),
                  test_split=("2020-01-01","2024-11-01"),
@@ -210,7 +230,7 @@ class BENCH_Set1(BENCHBase):
 class BENCH_Set2(BENCHBase):
     def __init__(self, 
                  time_span=("2015-01-01","2020-01-01"),
-                 fit_time_split=("2015-01-01","2020-01-01"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2015-01-01","2020-01-01"),
                  valid_split=("2015-01-01","2020-01-01"),
                  test_split=("2015-01-01","2020-01-01"),
@@ -230,7 +250,7 @@ class BENCH_Set2(BENCHBase):
 class BENCH_Set3(BENCHBase):
     def __init__(self, 
                  time_span=("2010-01-01","2015-01-01"),
-                 fit_time_split=("2010-01-01","2015-01-01"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2010-01-01","2015-01-01"),
                  valid_split=("2010-01-01","2015-01-01"),
                  test_split=("2010-01-01","2015-01-01"),
@@ -250,7 +270,7 @@ class BENCH_Set3(BENCHBase):
 class BENCH_Set4(BENCHBase):
     def __init__(self, 
                  time_span=("2005-01-01","2010-01-01"),
-                 fit_time_split=("2005-01-01","2010-01-01"),
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=("2005-01-01","2010-01-01"),
                  valid_split=("2005-01-01","2010-01-01"),
                  test_split=("2005-01-01","2010-01-01"),
@@ -274,7 +294,7 @@ class BENCH_Step(BENCHBase):
                  ):
         super(BENCH_Step, self).__init__(
                  time_span=test_split,
-                 fit_time_split=test_split,
+                 fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=test_split,
                  valid_split=test_split,
                  test_split=test_split,

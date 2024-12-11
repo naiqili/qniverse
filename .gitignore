@@ -11,3 +11,4 @@ result/
 *.log
 private/
 mlrun1/
+plot_image_*

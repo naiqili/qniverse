@@ -8,7 +8,7 @@ model_config: &model_config
   pred_len: 1
   e_layers: 2
   factor: 3
-  enc_in: 158
+  enc_in: 360
   down_sampling_window: 2
   channel_independence: True
   moving_avg: 25
@@ -47,9 +47,9 @@ task:
       horizon: 1
       batch_size: 32
   qlib_dataset:
-    class: BENCH_A
+    class: BENCH_LPY
     kwargs:
       market: csi300
       benchmark: SH000300 
-      feat: Alpha158
+      feat: Alpha360
       label: r1
