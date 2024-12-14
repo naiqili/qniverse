@@ -7,6 +7,7 @@ from qlib.workflow import R
 from qlib.workflow.record_temp import SignalRecord, PortAnaRecord
 from src.dataset import MTSDatasetH
 from lilab.qlib.backtest.benchmark import *
+import plotly
 import warnings
 warnings.filterwarnings('ignore')
 import os,sys
@@ -84,11 +85,9 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
     with R.start(experiment_name=EXP_NAME, uri=URI):
         recorder = R.get_recorder(recorder_id=rid)
         model = recorder.load_object("trained_model")
-
         # prediction
         recorder = R.get_recorder(recorder_id=rid)
         ba_rid = recorder.id
-        print("**** ", ba_rid)
         sr = SignalRecord(model, dataset, recorder)
         sr.generate()
 
@@ -106,9 +105,37 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
         positions = recorder.load_object("portfolio_analysis/positions_normal_1day.pkl")
         analysis_df = recorder.load_object("portfolio_analysis/port_analysis_1day.pkl")
 
-    # analysis
-    fig = analysis_position.report_graph(report_normal_df, show_notebook=False)[0]
-    fig.write_image(f"plot_image_{EXP_NAME}.jpg", format='jpeg')
+        recorder.save_objects(artifact_path='portfolio_analysis', **{'pred_label.pkl':pred_df})
+        print(recorder)
+
+    fig_list = analysis_position.report_graph(report_normal_df, show_notebook=False)
+    for i, fig in enumerate(fig_list):
+        fig: plotly.graph_objs.Figure = fig
+        fig.write_image(f'../tmp/{EXP_NAME}_rg_{i}.jpg',engine='kaleido')
+
+    
+    fig_list = analysis_position.risk_analysis_graph(analysis_df, report_normal_df, show_notebook=False)
+    for i, fig in enumerate(fig_list):
+        fig: plotly.graph_objs.Figure = fig
+        fig.write_image(f'../tmp/{EXP_NAME}_rag_{i}.jpg',engine='kaleido')
+    
+
+
+    label_df = dataset.prepare("test", col_set="label")
+    label_df.columns = ["label"]
+    # pred_label = pd.concat([label_df, pred_df], axis=1, sort=True).reindex(label_df.index)
+
+    fig_list = analysis_position.score_ic_graph(pred_df, show_notebook=False)
+
+    for i, fig in enumerate(fig_list):
+        fig: plotly.graph_objs.Figure = fig
+        fig.write_image(f'../tmp/{EXP_NAME}_sig_{i}.jpg',engine='kaleido')
+
+
+    fig_list = analysis_model.model_performance_graph(pred_df, show_notebook=False)
+    for i, fig in enumerate(fig_list):
+        fig: plotly.graph_objs.Figure = fig
+        fig.write_image(f'../tmp/{EXP_NAME}_mpg_{i}.jpg',engine='kaleido')
 
 
 if __name__ == "__main__":

@@ -51,9 +51,9 @@ task:
       horizon: 1
       batch_size: 32
   qlib_dataset:
-    class: BENCH_LPY
+    class: BENCH_Step
     kwargs:
-      market: csi300
+      market: csi300_ext
       benchmark: SH000300 
       feat: Alpha360
       label: r1

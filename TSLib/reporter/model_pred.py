@@ -33,13 +33,13 @@ parser.add_argument("--today", type=str)
 # parser.add_argument("--btend", type=str)
 args = parser.parse_args()
 
-TODAY = '2024-10-18'
+TODAY = '2024-12-10'
 TODAY = args.today
-test_split = (TODAY, TODAY)
+test_split = ('2024-01-01', TODAY)
 
-# 4699ac22b318498998b569aa0c42eedd
+# 4699ac22b318498998b569aa0c42eedd   5bc77afc2c434c32a2a07b5554f8a38b
 pretrained_dict = {
-'PatchTST': 'b9abb5c01a4c46ecb090afdf3571eed6',
+'PatchTST': '5bc77afc2c434c32a2a07b5554f8a38b', #'b9abb5c01a4c46ecb090afdf3571eed6',
 'PDF': 'e9bfe3cdf0b64966b3368feb2bd6305f',
 'SegRNN': 'baea86c973bf4c06b65d038bba18a576',
 'TimeBridge': 'b2c946befdd24ba980c6c01da8899a82',
@@ -48,9 +48,9 @@ pretrained_dict = {
 'WFTNet': '47101b2cac2b4136a50562406b421986'
 }
 
-model_name = "PatchTST"
+model_name = "PDF"
 
-EXP_NAME, rid = model_name, pretrained_dict[model_name]
+EXP_NAME, RID = model_name, pretrained_dict[model_name]
 
 TOPK = 10
 NDROP = 2
@@ -64,12 +64,14 @@ info = {
     'params': [f'topk {TOPK} ndrop {NDROP} HT {HT}']
 }
 
-# nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
-# filter_pipe=[nameDFilter]
-benchmark = BENCH_LPY(market=info['market'][0], \
-                      benchmark=info['benchmark'][0], \
-                      feat=info['feat'][0], \
-                      label=info['label'][0])
+filter_pipe=[]
+benchmark = BENCH_Step(test_split, \
+                       market=info['market'][0], \
+                       benchmark=info['benchmark'][0], \
+                       feat=info['feat'][0], \
+                       label=info['label'][0], \
+                       account=10000000, \
+                       filter_pipe=filter_pipe)
 
 dataset_info = {
     'seq_len': 20, 
@@ -88,11 +90,13 @@ dataset = MTSDatasetH(
 # dataset.prepare('test')
 
 with R.start(experiment_name=EXP_NAME, uri=URI):
+        rid = RID
+
+with R.start(experiment_name=EXP_NAME, uri=URI):
     recorder = R.get_recorder(recorder_id=rid)
     model = recorder.load_object("trained_model")
     # prediction
-    recorder = R.get_recorder(recorder_id=rid)
-    ba_rid = recorder.id
+    ba_rid = R.get_recorder().id
     sr = SignalRecord(model, dataset, recorder)
     sr.generate()
 

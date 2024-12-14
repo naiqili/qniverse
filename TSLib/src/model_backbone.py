@@ -90,7 +90,6 @@ class QniverseModel(Model):
                 self.logger.warn(f"logdir {self.logdir} is not empty")
             os.makedirs(self.logdir, exist_ok=True)
 
-        self.fitted = False
         self.global_step = -1
 
     def train_epoch(self, data_set):
@@ -193,7 +192,7 @@ class QniverseModel(Model):
         print("preds")
         print(preds)
         return metrics, preds
-
+    
     def fit(self, dataset, evals_result=dict()):
         
         train_set, valid_set, test_set = dataset.prepare(["train", "valid", "test"])
@@ -212,7 +211,6 @@ class QniverseModel(Model):
         evals_result["test"] = []
 
         # train
-        self.fitted = True
         self.global_step = -1
 
         for epoch in range(self.n_epochs):
@@ -294,8 +292,6 @@ class QniverseModel(Model):
                 json.dump(info, f)
 
     def predict(self, dataset, segment="test"):
-        if not self.fitted:
-            raise ValueError("model is not fitted yet!")
 
         test_set = dataset.prepare(segment)
 

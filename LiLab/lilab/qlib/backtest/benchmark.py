@@ -209,12 +209,12 @@ class BENCH_NOW(BENCHBase):
 
 class BENCH_Set1(BENCHBase):
     def __init__(self, 
-                 time_span=("2020-01-01","2024-11-01"),
+                 time_span=("2010-01-01","2024-12-01"),
                  fit_time_split=("2022-01-01","2024-01-01"),
-                 train_split=("2020-01-01","2024-11-01"),
-                 valid_split=("2020-01-01","2024-11-01"),
-                 test_split=("2020-01-01","2024-11-01"),
-                 backtest_split=("2024-11-01","2024-12-01"),
+                 train_split=("2010-01-01","2020-12-31"),
+                 valid_split=("2021-01-01","2023-12-31"),
+                 test_split=("2024-01-01","2024-12-01"),
+                 backtest_split=("2024-01-01","2024-12-01"),
                  **kwargs
                  ):
         super(BENCH_Set1, self).__init__(
@@ -297,6 +297,23 @@ class BENCH_Step(BENCHBase):
                  fit_time_split=("2022-01-01","2024-01-01"),
                  train_split=test_split,
                  valid_split=test_split,
+                 test_split=test_split,
+                 backtest_split=test_split,
+                 **kwargs
+        )
+
+
+class BENCH_Train_Step(BENCHBase):
+    def __init__(self, 
+                 test_split,
+                 today,
+                 **kwargs
+                 ):
+        super(BENCH_Train_Step, self).__init__(
+                 time_span=("2022-01-01",today),
+                 fit_time_split=("2022-01-01","2024-01-01"),
+                 train_split=("2018-01-01", "2022-12-31"),
+                 valid_split=("2023-01-01", "2023-12-31"),
                  test_split=test_split,
                  backtest_split=test_split,
                  **kwargs

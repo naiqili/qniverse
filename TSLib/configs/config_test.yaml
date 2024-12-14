@@ -7,7 +7,7 @@ model_config: &model_config
   pred_len: 1
   e_layers: 2
   factor: 3
-  enc_in: 158
+  enc_in: 360
   patch_len: 4
   stride: 4
   c_out: 1
@@ -25,7 +25,7 @@ task:
     kwargs:
       lr: 0.0001
       n_epochs: 1
-      # max_steps_per_epoch: None
+      max_steps_per_epoch: 5000
       early_stop: 1
       seed: 2024
       logdir: output/patchtst
@@ -40,9 +40,10 @@ task:
       horizon: 1
       batch_size: 32
   qlib_dataset:
-    class: BENCH_C
+    class: BENCH_Step #BENCH_Train_Step
     kwargs:
-      market: csi300
-      benchmark: SH000300 
-      feat: Alpha158
+      market: csi300_ext
+      benchmark: SH000300
+      feat: Alpha360
       label: r1
+      account: 10000000

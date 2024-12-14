@@ -21,28 +21,29 @@ else
     echo 'QLIB Database updated'
 
     echo 'Running baselines...'
-    python reporter/model/gdbt_pred.py --today $ED
-    python reporter/model/gdbt_fig.py --btstart $ST --btend $ED
-    python reporter/model/olmar.py --btstart $ST --btend $ED
-    python reporter/model/kelly.py --btstart $ST --btend $ED
-    python reporter/model/up.py --btstart $ST --btend $ED
-    python reporter/model/ons.py --btstart $ST --btend $ED
+    python TSLib/train_today.py --config_file TSLib/configs/config_patchtst.yaml
+    # python reporter/model/gdbt_pred.py --today $ED
+    # python reporter/model/gdbt_fig.py --btstart $ST --btend $ED
+    # python reporter/model/olmar.py --btstart $ST --btend $ED
+    # python reporter/model/kelly.py --btstart $ST --btend $ED
+    # python reporter/model/up.py --btstart $ST --btend $ED
+    # python reporter/model/ons.py --btstart $ST --btend $ED
     # python reporter/model/anticor.py --btstart $ST --btend $ED
     # python reporter/model/corn.py --btstart $ST --btend $ED
     # python reporter/model/bnn.py --btstart $ST --btend $ED
     # python reporter/model/pamr.py --btstart $ST --btend $ED
     # python reporter/model/wmamr.py --btstart $ST --btend $ED
-    python reporter/model/mpt.py --btstart $ST --btend $ED
-    python reporter/model/eg.py --btstart $ST --btend $ED
+    # python reporter/model/mpt.py --btstart $ST --btend $ED
+    # python reporter/model/eg.py --btstart $ST --btend $ED
     # python reporter/model/tco.py --btstart $ST --btend $ED
 
-    echo 'push to github...'
-    git add .
-    git commit -m $ED
-    git push
+    # echo 'push to github...'
+    # git add .
+    # git commit -m $ED
+    # git push
 
     
-    cd /home/linq/finance/private
+    cd /home/linq/finance/private_trade
     jupyter nbconvert --to notebook --execute --inplace realworld_position_maker.ipynb
     git add .
     git commit -m $ED
