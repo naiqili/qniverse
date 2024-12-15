@@ -9,8 +9,8 @@ ST='2024-01-01'
 echo '=================START======================'
 echo $(date)
 
-ED=$(python ./reporter/get_date.py)
-# ED='2024-12-13'
+# ED=$(python ./reporter/get_date.py)
+ED='2024-12-13'
 
 if [ $ED == "0" ]; then
 # if [ '1' == "0" ]; then
@@ -23,6 +23,7 @@ else
     # echo 'QLIB Database updated'
 
     echo 'Running baselines...'
+    python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml 
     python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml
     python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml
     python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml 
