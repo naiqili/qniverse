@@ -179,8 +179,8 @@ def main(seed, config_file="configs/config_wftnet.yaml", btstart="2024-01-01"):
 
     import dataframe_image as dfi
 
-    dfi.export(top, f'../tmp/{model_name}_top20.png',table_conversion='matplotlib')
-    dfi.export(bottom, f'../tmp/{model_name}_bottom20.png',table_conversion='matplotlib')
+    dfi.export(top, f'../tmp/{model_name}_top10.png',table_conversion='matplotlib')
+    dfi.export(bottom, f'../tmp/{model_name}_bottom10.png',table_conversion='matplotlib')
 
     infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date', 'Top K', 'Sell thresh', 'Hold thresh'],
                        'value': ['2024-11-16', TODAY, TOPK, BAD_THRESH, HT]})
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     # set params from cmd
     parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("--seed", type=int, default=1000, help="random seed")
-    parser.add_argument("--config_file", type=str, default="configs/config_patchtst.yaml", help="config file")
+    parser.add_argument("--config_file", type=str, default="configs/config_segrnn.yaml", help="config file")
     # parser.add_argument("--today", type=str, default="2024-12-10")
     parser.add_argument("--btstart", type=str, default="2024-01-01")
     args = parser.parse_args()

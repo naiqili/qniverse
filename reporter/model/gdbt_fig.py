@@ -28,24 +28,36 @@ parser.add_argument("--btstart", type=str)
 parser.add_argument("--btend", type=str)
 args = parser.parse_args()
 
-test_split = (args.btstart, args.btend)
 
-
-EXP_NAME, rid = 'GBDT', 'f09426d39ef64dd48c3facd2b121498e'
+# EXP_NAME, rid = 'GBDT', 'afee3d7e0404433692e3f5bbbac14b99'
+EXP_NAME, rid = 'GBDT', 'afee3d7e0404433692e3f5bbbac14b99'
 
 SAVE_CSV = True
 TOPK = 10
-NDROP = 2
-HT = 10
+# NDROP = 2
+BAD_THRESH = -0.02
+HT = 1
+
+
+import dataframe_image as dfi
+
+cal = pd.read_csv('/data/linq/.qlib/qlib_data/cn_data/calendars/day.txt')
+TODAY = str(cal.iloc[-1,0])
+YESTODAY = str(cal.iloc[-2,0])
+infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date', 'Top K', 'Sell thresh', 'Hold thresh'],
+                    'value': ['2024-11-16', TODAY, TOPK, BAD_THRESH, HT]})
+
+dfi.export(infodf, f'./tmp/gbdt_info.png',table_conversion='matplotlib')
+test_split = (args.btstart, YESTODAY)
 
 info = {
     'ALGO': ['GBDT'],
     'BENCH_DATASET': ['BENCH_Step'],
     'market': ['csi300_ext'], 
     'benchmark': ["SH000300"], 
-    'feat': ["Alpha360"], 
+    'feat': ["Alpha158"], 
     'label': ['r1'],
-    'params': [f'topk {TOPK} ndrop {NDROP} HT {HT}']
+    'params': [f'topk {TOPK} HT {HT}']
 }
 
 # nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
@@ -67,18 +79,19 @@ with R.start(experiment_name=EXP_NAME, uri=URI):
 dataset = init_instance_by_config(benchmark.dataset_config)
 
 strategy_config = {
-    "class": "TopkDropoutStrategy",
-    "module_path": "qlib.contrib.strategy.signal_strategy",
+    "class": "TopkDropoutBadStrategy",
+    "module_path": "lilab.qlib.strategy.signal_strategy",
     "kwargs": {
         "model": model,
         "dataset": dataset,
         "topk": TOPK,
-        "n_drop": NDROP,
+        "bad_thresh": BAD_THRESH,
         "hold_thresh": HT,
     },
 }
 
-EXP_NAME = 'realworld_test'
+
+# EXP_NAME = 'realworld_test'
 
 port_analysis_config = {
     "executor": benchmark.executor_config,
@@ -89,16 +102,13 @@ port_analysis_config = {
 # backtest and analysis
 with R.start(experiment_name=EXP_NAME, uri=URI):
     recorder = R.get_recorder(recorder_id=rid)
-
-    # prediction
-    recorder = R.get_recorder(recorder_id=rid)
     ba_rid = recorder.id
     sr = SignalRecord(model, dataset, recorder)
     sr.generate()
-    pred_df: pd.DataFrame = recorder.load_object("pred.pkl")
-    print(pred_df)
-    pred_df.index = pred_df.index.droplevel(0)
-    sr.save(**{"pred.pkl": pred_df})
+    # pred_df: pd.DataFrame = recorder.load_object("pred.pkl")
+    # print(pred_df)
+    # pred_df.index = pred_df.index.droplevel(0)
+    # sr.save(**{"pred.pkl": pred_df})
 
     # backtest & analysis
     par = PortAnaRecord(recorder, port_analysis_config, "day")
@@ -116,10 +126,14 @@ with R.start(experiment_name=EXP_NAME, uri=URI):
 
     label_df = dataset.prepare("test", col_set="label")
     label_df.columns = ["label"]
-    label_df.index = label_df.index.droplevel(0)
+    # label_df.index = label_df.index.droplevel(0)
     pred_label = pd.concat([label_df, pred_df], axis=1, sort=True).reindex(label_df.index)
     recorder.save_objects(artifact_path='portfolio_analysis', **{'pred_label.pkl':pred_label})
     print(recorder)
+
+rank_df = pred_label.groupby('datetime').apply(lambda x: x.sort_values(by='score', ascending=False))
+rank_df.index = rank_df.index.droplevel(0)
+rank_df.to_csv(f'./log/GBDT_backtest_return_{TODAY}.csv')
 
 from lilab.qlib.utils.metrics import get_detailed_report, compute_signal_metrics
 

@@ -115,7 +115,7 @@ import dataframe_image as dfi
 dfi.export(top10, f'./tmp/{model_name}_top10.png',table_conversion='matplotlib')
 dfi.export(bottom10, f'./tmp/{model_name}_bottom10.png',table_conversion='matplotlib')
 
-infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date'],
-                       'date': ['2024-11-16', TODAY]})
+# infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date'],
+#                        'date': ['2024-11-16', TODAY]})
 
-dfi.export(infodf, f'./tmp/{model_name}_info.png',table_conversion='matplotlib')
+# dfi.export(infodf, f'./tmp/{model_name}_info.png',table_conversion='matplotlib')

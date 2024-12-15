@@ -28,15 +28,28 @@ parser.add_argument("--btstart", type=str)
 parser.add_argument("--btend", type=str)
 args = parser.parse_args()
 
-test_split = (args.btstart, args.btend)
+
 
 
 EXP_NAME, rid = 'GBDT', 'f09426d39ef64dd48c3facd2b121498e'
 
 SAVE_CSV = True
 TOPK = 10
-NDROP = 2
-HT = 10
+# NDROP = 2
+BAD_THRESH = -0.15
+HT = 2
+
+
+import dataframe_image as dfi
+
+cal = pd.read_csv('/data/linq/.qlib/qlib_data/cn_data/calendars/day.txt')
+TODAY = str(cal.iloc[-1,0])
+YESTODAY = str(cal.iloc[-2,0])
+infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date', 'Top K', 'Sell thresh', 'Hold thresh'],
+                    'value': ['2024-11-16', TODAY, TOPK, BAD_THRESH, HT]})
+
+dfi.export(infodf, f'./tmp/gbdt_info.png',table_conversion='matplotlib')
+test_split = (args.btstart, YESTODAY)
 
 info = {
     'ALGO': ['GBDT'],
@@ -45,7 +58,7 @@ info = {
     'benchmark': ["SH000300"], 
     'feat': ["Alpha360"], 
     'label': ['r1'],
-    'params': [f'topk {TOPK} ndrop {NDROP} HT {HT}']
+    'params': [f'topk {TOPK}  HT {HT}']
 }
 
 # nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
@@ -67,13 +80,13 @@ with R.start(experiment_name=EXP_NAME, uri=URI):
 dataset = init_instance_by_config(benchmark.dataset_config)
 
 strategy_config = {
-    "class": "TopkDropoutStrategy",
-    "module_path": "qlib.contrib.strategy.signal_strategy",
+    "class": "TopkDropoutBadStrategy",
+    "module_path": "lilab.qlib.strategy.signal_strategy",
     "kwargs": {
         "model": model,
         "dataset": dataset,
         "topk": TOPK,
-        "n_drop": NDROP,
+        "bad_thresh": BAD_THRESH,
         "hold_thresh": HT,
     },
 }
@@ -160,3 +173,4 @@ fig_list = analysis_model.model_performance_graph(pred_label, show_notebook=Fals
 for i, fig in enumerate(fig_list):
     fig: plotly.graph_objs.Figure = fig
     fig.write_image(f'./tmp/gbdt_mpg_{i}.jpg',engine='kaleido')
+
