@@ -26,8 +26,7 @@ pretrained_dict = {
 'WFTNet': '47101b2cac2b4136a50562406b421986'
 }
 
-
-def main(seed, config_file="configs/config_wftnet.yaml"):
+def main(seed, config_file="configs/config_wftnet.yaml", btstart="2024-01-01"):
 
     # set random seed
     with open(config_file) as f:
@@ -49,54 +48,65 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
 
     )
 
-    TODAY = '2024-12-10'
-    test_split = ('2024-01-01', TODAY)
-    filter_pipe = []
-    # config  BENCH_Train_Step  test_split=test_split, today=TODAY, filter_pipe=filter_pipe
-    benchmark = eval(config["task"]["qlib_dataset"]["class"])(**config["task"]["qlib_dataset"]["kwargs"], 
-                                                              test_split=test_split, filter_pipe=filter_pipe)
-    dataset = init_instance_by_config(benchmark.dataset_config)
-    config["task"]["dataset"]["kwargs"]["handler"] = dataset.handler
-    config["task"]["dataset"]["kwargs"]["segments"] = dataset.segments
-    print(dataset.segments)
+    # TODAY = today
+    cal = pd.read_csv('/data/linq/.qlib/qlib_data/cn_data/calendars/day.txt')
+    TODAY = str(cal.iloc[-1,0])
+    YESTERDAY = str(cal.iloc[-2,0])
+    pred_split = (btstart, YESTERDAY)
+    yield_split = (TODAY, TODAY)
+
+    # pred
+    pred_benchmark = eval(config["task"]["qlib_dataset"]["class"])(**config["task"]["qlib_dataset"]["kwargs"], test_split=pred_split)
+    pred_dataset = init_instance_by_config(pred_benchmark.dataset_config)
+    config["task"]["dataset"]["kwargs"]["handler"] = pred_dataset.handler
+    config["task"]["dataset"]["kwargs"]["segments"] = pred_dataset.segments
+    print(pred_dataset.segments)
     # origin data -> MTS DataLoader
-    dataset = eval(config["task"]["dataset"]["class"])(**config["task"]["dataset"]["kwargs"])
-    # dataset = init_instance_by_config(config["task"]["dataset"])
+    pred_dataset = eval(config["task"]["dataset"]["class"])(**config["task"]["dataset"]["kwargs"])
+
+    # yield
+    yield_benchmark = eval(config["task"]["qlib_dataset"]["class"])(**config["task"]["qlib_dataset"]["kwargs"], test_split=yield_split)
+    yield_dataset = init_instance_by_config(yield_benchmark.dataset_config)
+    config["task"]["dataset"]["kwargs"]["handler"] = yield_dataset.handler
+    config["task"]["dataset"]["kwargs"]["segments"] = yield_dataset.segments
+    print(yield_dataset.segments)
+    # origin data -> MTS DataLoader
+    yield_dataset = eval(config["task"]["dataset"]["class"])(**config["task"]["dataset"]["kwargs"])
+    
     model = init_instance_by_config(config["task"]["model"])
 
-    TOPK = 10
-    NDROP = 2
-    HT = 10
+    TOPK = config["strategy_config"]["topk"]
+    # NDROP = 2
+    BAD_THRESH = config["strategy_config"]["bad_thresh"]
+    HT = config["strategy_config"]["hold_thresh"]
 
     strategy_config = {
-        "class": "TopkDropoutStrategy",
-        "module_path": "qlib.contrib.strategy.signal_strategy",
+        # "class": "TopkDropoutStrategy",
+        # "module_path": "qlib.contrib.strategy.signal_strategy",
+        "class": "TopkDropoutBadStrategy",
+        "module_path": "lilab.qlib.strategy.signal_strategy",
         "kwargs": {
             "model": model,
-            "dataset": dataset,
+            "dataset": pred_dataset,
             "topk": TOPK,
-            "n_drop": NDROP,
+            "bad_thresh": BAD_THRESH,
             "hold_thresh": HT,
         },
     }
 
-    # model.fit(dataset)
     EXP_NAME = config["task"]["model"]['kwargs']['model_type']
     URI = '/home/linq/finance/qniverse/mlrun'
     
     with R.start(experiment_name=EXP_NAME, uri=URI):
         rid = RID
-        # model.fit(dataset)
-        # R.save_objects(trained_model=model)
-        # rid = R.get_recorder().id
         print("*******")
         print(rid)
         print("*******")
     
     port_analysis_config = {
-        "executor": benchmark.executor_config,
+        "executor": pred_benchmark.executor_config,
         "strategy": strategy_config,
-        "backtest": benchmark.backtest_config
+        "backtest": pred_benchmark.backtest_config
     }
     
 
@@ -104,16 +114,16 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
     with R.start(experiment_name=EXP_NAME, uri=URI):
         recorder = R.get_recorder(recorder_id=rid)
         model = recorder.load_object("trained_model")
-        # model = torch.load(f'{URI}/3/{rid}/artifacts/trained_model')
         # prediction
-        recorder = R.get_recorder(recorder_id=rid)
-        ba_rid = recorder.id
-        sr = SignalRecord(model, dataset, recorder)
+        sr = SignalRecord(model, pred_dataset, recorder)
         sr.generate()
-
         # backtest & analysis
         par = PortAnaRecord(recorder, port_analysis_config, "day")
         par.generate()
+    
+    tomorrow_return = model.predict(yield_dataset)
+    tomorrow_return = tomorrow_return.sort_values(by='score', ascending=False)
+    tomorrow_return.to_csv(f'../log/{EXP_NAME}_tomorrow_return_{TODAY}.csv')
 
     from qlib.contrib.report import analysis_model, analysis_position
 
@@ -141,7 +151,7 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
     
 
 
-    label_df = dataset.prepare("test", col_set="label")
+    label_df = pred_dataset.prepare("test", col_set="label")
     label_df.columns = ["label"]
     # pred_label = pd.concat([label_df, pred_df], axis=1, sort=True).reindex(label_df.index)
 
@@ -157,20 +167,23 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
         fig: plotly.graph_objs.Figure = fig
         fig.write_image(f'../tmp/{EXP_NAME}_mpg_{i}.jpg',engine='kaleido')
 
-    rank_df = pred_df.droplevel(0).sort_values(by='score', ascending=False)
-    top10: pd.DataFrame = rank_df.head(10)
-    bottom10: pd.DataFrame = rank_df.tail(10)
+    rank_df = pred_df.groupby('datetime').apply(lambda x: x.sort_values(by='score', ascending=False))
+    rank_df.index = rank_df.index.droplevel(0)
+    rank_df.to_csv(f'../log/{EXP_NAME}_backtest_return_{TODAY}.csv')
 
-    top10.to_markdown(f'../tmp/{model_name}_top10.md')
-    bottom10.to_markdown(f'../tmp/{model_name}_bottom10.md')
+    top: pd.DataFrame = tomorrow_return.head(20)
+    bottom: pd.DataFrame = tomorrow_return.tail(20)
+
+    # top10.to_markdown(f'../tmp/{model_name}_top10.md')
+    # bottom10.to_markdown(f'../tmp/{model_name}_bottom10.md')
 
     import dataframe_image as dfi
 
-    dfi.export(top10, f'../tmp/{model_name}_top10.png',table_conversion='matplotlib')
-    dfi.export(bottom10, f'../tmp/{model_name}_bottom10.png',table_conversion='matplotlib')
+    dfi.export(top, f'../tmp/{model_name}_top20.png',table_conversion='matplotlib')
+    dfi.export(bottom, f'../tmp/{model_name}_bottom20.png',table_conversion='matplotlib')
 
-    infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date'],
-                       'date': ['2024-11-16', TODAY]})
+    infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date', 'Top K', 'Sell thresh', 'Hold thresh'],
+                       'value': ['2024-11-16', TODAY, TOPK, BAD_THRESH, HT]})
 
     dfi.export(infodf, f'../tmp/{model_name}_info.png',table_conversion='matplotlib')
 
@@ -179,6 +192,8 @@ if __name__ == "__main__":
     # set params from cmd
     parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("--seed", type=int, default=1000, help="random seed")
-    parser.add_argument("--config_file", type=str, default="configs/config_wftnet.yaml", help="config file")
+    parser.add_argument("--config_file", type=str, default="configs/config_patchtst.yaml", help="config file")
+    # parser.add_argument("--today", type=str, default="2024-12-10")
+    parser.add_argument("--btstart", type=str, default="2024-01-01")
     args = parser.parse_args()
     main(**vars(args))

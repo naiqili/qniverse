@@ -20,6 +20,12 @@ model_config: &model_config
   activation: 'gelu'
 
 
+strategy_config: &strategy_config
+  topk: 10
+  bad_thresh: -0.15
+  hold_thresh: 2
+
+
 task:
   model:
     class: QniverseModel

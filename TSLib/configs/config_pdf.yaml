@@ -57,3 +57,10 @@ task:
       benchmark: SH000300 
       feat: Alpha360
       label: r1
+
+
+strategy_config: &strategy_config
+  topk: 10
+  bad_thresh: -0.008
+  hold_thresh: 2
+

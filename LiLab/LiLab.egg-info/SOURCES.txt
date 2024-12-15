@@ -9,6 +9,8 @@ lilab/qlib/backtest/__init__.py
 lilab/qlib/backtest/benchmark.py
 lilab/qlib/data/__init__.py
 lilab/qlib/data/get_data.py
+lilab/qlib/model/__init__.py
+lilab/qlib/model/gbdt.py
 lilab/qlib/scripts/__init__.py
 lilab/qlib/scripts/check_dump_bin.py
 lilab/qlib/scripts/collect_info.py
