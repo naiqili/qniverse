@@ -95,7 +95,18 @@ class LGBModel(ModelFT, LightGBMFInt):
             raise ValueError("model is not fitted yet!")
         x_test = dataset.prepare(segment, col_set="feature", data_key=DataHandlerLP.DK_I)
         pred_df = pd.Series(self.model.predict(x_test.values), index=x_test.index)
-        pred_df = pred_df.sort_values(ascending=False).iloc[self.skip_topk:]
+        
+        # Function to divide top k values of each group
+        def divide_top_k(group, k):
+            # Get the top k indices
+            top_k_indices = group.nlargest(k).index
+            # Divide the top k values by 1000
+            group.loc[top_k_indices] = group.loc[top_k_indices] / 100000
+            return group
+
+        # Apply the function to each group (grouped by the first level 'date')
+        pred_df = pred_df.groupby(level='datetime').apply(divide_top_k, self.skip_topk)
+        pred_df = pred_df.droplevel(0)
         return pred_df
 
     def finetune(self, dataset: DatasetH, num_boost_round=10, verbose_eval=20, reweighter=None):

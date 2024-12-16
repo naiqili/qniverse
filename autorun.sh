@@ -22,17 +22,19 @@ else
     # python ~/finance/qniverse/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
     # echo 'QLIB Database updated'
 
-    echo 'Running baselines...'
-    python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml
-    python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml
-    python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_timebridge.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_timemixer.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml
-    python ./TSLib/train_today.py --config_file ./configs/config_wftnet.yaml 
-    python reporter/model/gdbt_pred.py
-    python reporter/model/gdbt_fig.py --btstart $ST
+    # echo 'Running baselines...'
+    # python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml 
+    # python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml
+    # python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml
+    # python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml 
+    # python ./TSLib/train_today.py --config_file ./configs/config_timebridge.yaml 
+    # python ./TSLib/train_today.py --config_file ./configs/config_timemixer.yaml 
+    # python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml
+    # python ./TSLib/train_today.py --config_file ./configs/config_wftnet.yaml 
+    # python reporter/model/gdbt_pred.py
+    # python reporter/model/gdbt_fig.py --btstart $ST
+    python reporter/model/gdbt_skip_pred.py
+    python reporter/model/gdbt_skip_fig.py --btstart $ST
     # python reporter/model/olmar.py --btstart $ST --btend $ED
     # python reporter/model/kelly.py --btstart $ST --btend $ED
     # python reporter/model/up.py --btstart $ST --btend $ED

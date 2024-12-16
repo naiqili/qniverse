@@ -17,13 +17,13 @@ os.chdir(sys.path[0])
 # python train_today.py --config_file configs/config_test.yaml
 
 pretrained_dict = {
-'PatchTST': '5bc77afc2c434c32a2a07b5554f8a38b', #'b9abb5c01a4c46ecb090afdf3571eed6',
-'PDF': 'e9bfe3cdf0b64966b3368feb2bd6305f',
-'SegRNN': 'baea86c973bf4c06b65d038bba18a576',
-'TimeBridge': 'b2c946befdd24ba980c6c01da8899a82',
-'TimeMixer': 'a97f63c66ceb4596bde4b02d416df8d1',
-'TimesNet': 'b850b745abfa4ebdba0b92a411786520',
-'WFTNet': '47101b2cac2b4136a50562406b421986'
+    'PatchTST': '5bc77afc2c434c32a2a07b5554f8a38b', #'b9abb5c01a4c46ecb090afdf3571eed6',
+    'PDF': 'e9bfe3cdf0b64966b3368feb2bd6305f',
+    'SegRNN': 'baea86c973bf4c06b65d038bba18a576',
+    'TimeBridge': 'b2c946befdd24ba980c6c01da8899a82',
+    'TimeMixer': 'a97f63c66ceb4596bde4b02d416df8d1',
+    'TimesNet': 'b850b745abfa4ebdba0b92a411786520',
+    'WFTNet': '47101b2cac2b4136a50562406b421986'
 }
 
 def main(seed, config_file="configs/config_wftnet.yaml", btstart="2024-01-01"):
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     # set params from cmd
     parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("--seed", type=int, default=1000, help="random seed")
-    parser.add_argument("--config_file", type=str, default="configs/config_segrnn.yaml", help="config file")
+    parser.add_argument("--config_file", type=str, default="configs/config_timemixer.yaml", help="config file")
     # parser.add_argument("--today", type=str, default="2024-12-10")
     parser.add_argument("--btstart", type=str, default="2024-01-01")
     args = parser.parse_args()

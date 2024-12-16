@@ -57,5 +57,5 @@ task:
 
 strategy_config: &strategy_config
   topk: 10
-  bad_thresh: -0.05
+  bad_thresh: -0.006
   hold_thresh: 2
