@@ -47,7 +47,7 @@ YESTODAY = str(cal.iloc[-2,0])
 infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date', 'Top K', 'Sell thresh', 'Hold thresh'],
                     'value': ['2024-11-16', TODAY, TOPK, BAD_THRESH, HT]})
 
-dfi.export(infodf, f'./tmp/gbdt_info.png',table_conversion='matplotlib')
+dfi.export(infodf, f'./tmp/gbdts_info.png',table_conversion='matplotlib')
 test_split = (args.btstart, YESTODAY)
 
 info = {

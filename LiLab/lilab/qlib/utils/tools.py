@@ -57,7 +57,10 @@ def load_position_text(text: str):
 def save_position_history(pos_history, path='./realworld_result/position_history.json'):
     save_dict = {}
     for dt, account in pos_history.items():
-        save_dict[str(dt)] = eval(str(account))
+        try:
+            save_dict[str(dt)] = eval(str(account))
+        except:
+            print('save_position_history error')
     with open(path, 'w') as json_file:
         json.dump(save_dict, json_file, indent=4) 
 
