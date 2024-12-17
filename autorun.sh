@@ -9,18 +9,18 @@ ST='2024-01-01'
 echo '=================START======================'
 echo $(date)
 
-# ED=$(python ./reporter/get_date.py)
-ED='2024-12-16'
+ED=$(python ./reporter/get_date.py)
+# ED='2024-12-16'
 
 if [ $ED == "0" ]; then
 # if [ '1' == "0" ]; then
     echo "No new data. Have a nice day!"
 else
-    # echo "New data detected: $ED"
-    # echo 'Update QLIB Database'
-    # python ./reporter/data_update.py
-    # python ~/finance/qniverse/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
-    # echo 'QLIB Database updated'
+    echo "New data detected: $ED"
+    echo 'Update QLIB Database'
+    python ./reporter/data_update.py
+    python ~/finance/qniverse/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
+    echo 'QLIB Database updated'
 
     # echo 'Running baselines...'
     python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml 
@@ -47,16 +47,16 @@ else
     # python reporter/model/eg.py --btstart $ST --btend $ED
     # python reporter/model/tco.py --btstart $ST --btend $ED
 
-    # echo 'push to github...'
-    # git add .
-    # git commit -m $ED
-    # git push
+    echo 'push to github...'
+    git add .
+    git commit -m $ED
+    git push
 
     
-    # cd /home/linq/finance/private_trade
-    # jupyter nbconvert --to notebook --execute --inplace realworld_position_maker.ipynb
-    # git add .
-    # git commit -m $ED
-    # git push
+    cd /home/linq/finance/private_trade
+    jupyter nbconvert --to notebook --execute --inplace ensemble_main.ipynb
+    git add .
+    git commit -m $ED
+    git push
 
 fi

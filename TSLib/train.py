@@ -13,6 +13,11 @@ warnings.filterwarnings('ignore')
 import os,sys
 os.chdir(sys.path[0])
 
+from qlib.contrib.evaluate import backtest_daily
+from qlib.contrib.evaluate import risk_analysis
+
+
+
 # python train.py --config_file configs/config_wftnet.yaml
 
 def main(seed, config_file="configs/config_wftnet.yaml"):
@@ -95,6 +100,7 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
         par = PortAnaRecord(recorder, port_analysis_config, "day")
         par.generate()
 
+    
     from qlib.contrib.report import analysis_model, analysis_position
 
     # load record
@@ -107,6 +113,32 @@ def main(seed, config_file="configs/config_wftnet.yaml"):
 
         recorder.save_objects(artifact_path='portfolio_analysis', **{'pred_label.pkl':pred_df})
         print(recorder)
+
+    
+    report_normal, positions_normal = backtest_daily(start_time="2023-01-01", end_time="2024-01-01", strategy=strategy_config)
+
+    dic = risk_analysis(report_normal["return"] - report_normal["bench"]).to_dict()['risk']
+    
+    IC = pred_df.groupby(level=0).apply(lambda group: group['score'].corr(group['label'])).to_numpy()
+    
+    ICIR = IC.mean() / IC.std()
+    
+    report = f"""
+    ***************************************
+                回测报告
+    ***************************************
+    年化收益率 (ARR):       {dic['annualized_return']:.4f}
+    最大回撤 (MDD):         {dic['max_drawdown']:.4f}
+    信息比率 (IR):          {dic['information_ratio']:.4f}
+    信息系数 (IC):          {IC.mean():.4f}
+    信息比率/信息系数比率 (ICIR): {ICIR:.4f}
+    ***************************************
+    """
+
+    print(report)
+
+    with open(f'{EXP_NAME}_backtest_report.txt', 'w') as file:
+        file.write(report)
 
     fig_list = analysis_position.report_graph(report_normal_df, show_notebook=False)
     for i, fig in enumerate(fig_list):
