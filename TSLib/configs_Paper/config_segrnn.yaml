@@ -26,7 +26,7 @@ task:
     kwargs:
       lr: 0.0001
       n_epochs: 1
-      max_steps_per_epoch: 5000
+      max_steps_per_epoch: 2000
       early_stop: 1
       seed: 2024
       logdir: output/segrnn
@@ -43,7 +43,7 @@ task:
       horizon: 1
       batch_size: 16
   qlib_dataset:
-    class: BENCH_Step
+    class: BENCH_LPY
     kwargs:
       market: csi300_ext
       benchmark: SH000300 

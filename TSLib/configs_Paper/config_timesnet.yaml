@@ -48,7 +48,7 @@ task:
       horizon: 1
       batch_size: 32
   qlib_dataset:
-    class: BENCH_Step
+    class: BENCH_LPY
     kwargs:
       market: csi300_ext
       benchmark: SH000300 
