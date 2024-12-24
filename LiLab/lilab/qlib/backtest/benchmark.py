@@ -35,6 +35,8 @@ class BENCHBase:
             self.label_code = (["Ref($close, -1)/$close - 1"], ["LABEL0"])
         elif label == 'r1':
             self.label_code = (["Ref($close, -2)/Ref($close, -1) - 1"], ["LABEL0"])
+        elif label == 'r2':
+            self.label_code = (["(Ref($close, -2)/$close - 1) / 2"], ["LABEL0"])            
         else:
             raise NotImplementedError()
         
@@ -191,10 +193,10 @@ class BENCH_NOW(BENCHBase):
     def __init__(self, 
                  time_span=("2010-01-01","2024-12-01"),
                  fit_time_split=("2022-01-01","2024-01-01"),
-                 train_split=("2010-01-01","2020-12-31"),
-                 valid_split=("2021-01-01","2023-12-31"),
-                 test_split=("2024-01-01","2024-12-01"),
-                 backtest_split=("2024-01-01","2024-12-01"),
+                 train_split=("2010-01-01","2022-12-31"),
+                 valid_split=("2023-01-01","2024-06-30"),
+                 test_split=("2024-07-01","2024-12-01"),
+                 backtest_split=("2024-07-01","2024-12-01"),
                  **kwargs
                  ):
         super(BENCH_NOW, self).__init__(
