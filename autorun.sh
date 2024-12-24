@@ -4,13 +4,13 @@ source ~/.bashrc
 conda activate qlib39
 cd /home/linq/finance/qniverse
 
-ST='2024-01-01'
+ST='2024-07-01'
 
 echo '=================START======================'
 echo $(date)
 
 ED=$(python ./reporter/get_date.py)
-# ED='2024-12-16'
+# ED='2024-12-24'
 
 if [ $ED == "0" ]; then
 # if [ '1' == "0" ]; then
@@ -23,17 +23,18 @@ else
     echo 'QLIB Database updated'
 
     # echo 'Running baselines...'
-    python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml
-    python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml
-    python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_timebridge.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_timemixer.yaml 
-    python ./TSLib/train_today.py --config_file ./configs/config_wftnet.yaml 
+    python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml  --btstart $ST
+    python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml --btstart $ST
+    python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml --btstart $ST
+    python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml  --btstart $ST
+    python ./TSLib/train_today.py --config_file ./configs/config_timebridge.yaml  --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_timemixer.yaml  --btstart $ST
+    python ./TSLib/train_today.py --config_file ./configs/config_wftnet.yaml  --btstart $ST
     # python reporter/model/gdbt_pred.py
     # python reporter/model/gdbt_fig.py --btstart $ST
     python reporter/model/gdbt_skip_pred.py
     python reporter/model/gdbt_skip_fig.py --btstart $ST
+    python reporter/model/xgb.py --btstart $ST
     # python reporter/model/olmar.py --btstart $ST --btend $ED
     # python reporter/model/kelly.py --btstart $ST --btend $ED
     # python reporter/model/up.py --btstart $ST --btend $ED

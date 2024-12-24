@@ -175,3 +175,45 @@ fig_list = analysis_model.model_performance_graph(pred_label, show_notebook=Fals
 for i, fig in enumerate(fig_list):
     fig: plotly.graph_objs.Figure = fig
     fig.write_image(f'./tmp/{EXP_NAME}_mpg_{i}.jpg',engine='kaleido')
+
+
+test_split = (TODAY, TODAY)
+benchmark = eval(info['BENCH_DATASET'][0])(\
+                 today=TODAY,
+                 market=info['market'][0], \
+                 benchmark=info['benchmark'][0], \
+                 feat=info['feat'][0], \
+                 label=info['label'][0], \
+                 account=10000000, \
+                 test_split=test_split,
+                 filter_pipe=filter_pipe)
+dataset = init_instance_by_config(benchmark.dataset_config)
+
+with R.start(experiment_name=EXP_NAME, uri=URI):
+    recorder = R.get_recorder(recorder_id=rid)
+    # model = recorder.load_object("trained_model")
+    ba_rid = R.get_recorder().id
+    sr = SignalRecord(model, dataset, recorder)
+    sr.generate()
+    
+    pred_df = recorder.load_object("pred.pkl")
+
+rank_df = pred_df.sort_values(by='score', ascending=False)
+rank_df = rank_df.droplevel(0)
+tomorrow_return = rank_df
+tomorrow_return.to_csv(f'./log/{EXP_NAME}_tomorrow_return_{TODAY}.csv')
+top10: pd.DataFrame = rank_df.head(20)
+bottom10: pd.DataFrame = rank_df.tail(20)
+
+# top10.to_markdown('./tmp/gdbt_top10.md')
+# bottom10.to_markdown('./tmp/gdbt_bottom10.md')
+
+import dataframe_image as dfi
+
+dfi.export(top10, f'./tmp/{EXP_NAME}_top10.png',table_conversion='matplotlib')
+dfi.export(bottom10, f'./tmp/{EXP_NAME}_bottom10.png',table_conversion='matplotlib')
+
+# infodf = pd.DataFrame({'label': ['Model update date', 'Prediction generation date'],
+#                        'date': ['2024-11-16', TODAY]})
+
+# dfi.export(infodf, './tmp/gdbt_info.png',table_conversion='matplotlib')
