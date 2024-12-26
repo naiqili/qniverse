@@ -22,6 +22,20 @@ else
     python ~/finance/qniverse/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
     echo 'QLIB Database updated'
 
+    python reporter/model/densemblegbm.py --btstart $ST
+
+    echo 'push to github...'
+    git add .
+    git commit -m $ED
+    git push
+    
+    cd /home/linq/finance/private_trade
+    jupyter nbconvert --to notebook --execute --inplace ensemble_private.ipynb
+    git add .
+    git commit -m $ED
+    git push
+
+    cd /home/linq/finance/qniverse
     # echo 'Running baselines...'
     python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml  --btstart $ST
     python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml --btstart $ST
