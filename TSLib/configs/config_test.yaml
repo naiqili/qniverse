@@ -42,7 +42,7 @@ task:
   qlib_dataset:
     class: BENCH_Step #BENCH_Train_Step
     kwargs:
-      market: csi300_ext
+      market: csi1300_ext
       benchmark: SH000300
       feat: Alpha360
       label: r1

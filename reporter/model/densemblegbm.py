@@ -59,9 +59,9 @@ info = {
     'params': [f'topk {TOPK} HT {HT}']
 }
 
-nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
-filter_pipe=[nameDFilter]
-# filter_pipe=[]
+# nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
+# filter_pipe=[nameDFilter]
+filter_pipe=[]
 benchmark = eval(info['BENCH_DATASET'][0])(\
                  today=TODAY,
                  market=info['market'][0], \
