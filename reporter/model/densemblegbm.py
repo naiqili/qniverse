@@ -52,7 +52,7 @@ test_split = (args.btstart, YESTODAY)
 info = {
     'ALGO': [EXP_NAME],
     'BENCH_DATASET': ['BENCH_Train_Step'],
-    'market': ['csi1000_ext'], 
+    'market': ['csi1300_ext'], 
     'benchmark': ["SH000300"], 
     'feat': ["Alpha360"], 
     'label': ['r2'],
