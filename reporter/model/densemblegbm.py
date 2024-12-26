@@ -24,7 +24,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 # parser.add_argument("--today", type=str)
-parser.add_argument("--btstart", type=str, default='2024-07-01')
+parser.add_argument("--btstart", type=str, default='2024-09-01')
 parser.add_argument("--btend", type=str)
 args = parser.parse_args()
 
@@ -52,7 +52,7 @@ test_split = (args.btstart, YESTODAY)
 info = {
     'ALGO': [EXP_NAME],
     'BENCH_DATASET': ['BENCH_Train_Step'],
-    'market': ['csi500_ext'], 
+    'market': ['csi1000_ext'], 
     'benchmark': ["SH000300"], 
     'feat': ["Alpha360"], 
     'label': ['r2'],
