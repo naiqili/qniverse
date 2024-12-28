@@ -22,7 +22,11 @@ else
     python ~/finance/qniverse/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
     echo 'QLIB Database updated'
 
+    python -m lilab.qlib.private.bensemble --btstart $ST
+    python -m lilab.qlib.private.nensemble --btstart $ST
     python reporter/model/densemblegbm.py --btstart $ST
+    python reporter/model/gdbt_skip_pred.py
+    python reporter/model/gdbt_skip_fig.py --btstart $ST
 
     echo 'push to github...'
     git add .
@@ -31,24 +35,22 @@ else
     
     cd /home/linq/finance/private_trade
     jupyter nbconvert --to notebook --execute --inplace ensemble_private.ipynb
-    git add .
-    git commit -m $ED
-    git push
+    # git add .
+    # git commit -m $ED
+    # git push
 
-    cd /home/linq/finance/qniverse
+    # cd /home/linq/finance/qniverse
     # echo 'Running baselines...'
-    python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml  --btstart $ST
-    python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml --btstart $ST
-    python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml --btstart $ST
-    python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml  --btstart $ST
-    python ./TSLib/train_today.py --config_file ./configs/config_timebridge.yaml  --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_timesnet.yaml  --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_patchtst.yaml --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_pdf.yaml --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_segrnn.yaml  --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_timebridge.yaml  --btstart $ST
     # python ./TSLib/train_today.py --config_file ./configs/config_timemixer.yaml  --btstart $ST
-    python ./TSLib/train_today.py --config_file ./configs/config_wftnet.yaml  --btstart $ST
+    # python ./TSLib/train_today.py --config_file ./configs/config_wftnet.yaml  --btstart $ST
     # python reporter/model/gdbt_pred.py
     # python reporter/model/gdbt_fig.py --btstart $ST
-    python reporter/model/gdbt_skip_pred.py
-    python reporter/model/gdbt_skip_fig.py --btstart $ST
-    python reporter/model/xgb.py --btstart $ST
+    # python reporter/model/xgb.py --btstart $ST
     # python reporter/model/olmar.py --btstart $ST --btend $ED
     # python reporter/model/kelly.py --btstart $ST --btend $ED
     # python reporter/model/up.py --btstart $ST --btend $ED
@@ -62,13 +64,13 @@ else
     # python reporter/model/eg.py --btstart $ST --btend $ED
     # python reporter/model/tco.py --btstart $ST --btend $ED
 
-    echo 'push to github...'
-    git add .
-    git commit -m $ED
-    git push
+    # echo 'push to github...'
+    # git add .
+    # git commit -m $ED
+    # git push
 
     
-    cd /home/linq/finance/private_trade
+    # cd /home/linq/finance/private_trade
     jupyter nbconvert --to notebook --execute --inplace ensemble_main.ipynb
     git add .
     git commit -m $ED

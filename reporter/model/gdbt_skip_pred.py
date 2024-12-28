@@ -23,6 +23,8 @@ qlib.init(provider_uri=provider_uri, region=REG_CN)
 from lilab.qlib.utils.tools import normalize_position_history, load_position_text, load_position_history, save_position_history, fill_price_position_history
 from lilab.qlib.backtest.benchmark import BENCH_Step
 import argparse
+from lilab.qlib.backtest.benchmark import *
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--today", type=str)
@@ -40,7 +42,7 @@ YESTODAY = str(cal.iloc[-2,0])
 test_split = (TODAY, TODAY)
 
 # EXP_NAME, rid = 'GBDT', 'afee3d7e0404433692e3f5bbbac14b99'
-EXP_NAME, rid = 'GBDT', '1fc2cf1e444f433da69e836fa5cf336d'
+EXP_NAME, rid = 'GBDT', 'a6d97665eab048bea8370c04d3ed7072'
 
 SAVE_CSV = True
 TOPK = 10
@@ -51,23 +53,26 @@ SKIP_TOPK = 70
 
 info = {
     'ALGO': ['GBDT'],
-    'market': ['csi300_ext'], 
+    'BENCH_DATASET': ['BENCH_Train_Step'],
+    'market': ['csi1300_ext'], 
     'benchmark': ["SH000300"], 
-    'feat': ["Alpha158"], 
-    'label': ['r1'],
+    'feat': ["LAlpha360"], 
+    'label': ['r2'],
     'params': [f'topk {TOPK} HT {HT}']
 }
 
 # nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
 # filter_pipe=[nameDFilter]
 filter_pipe=[]
-benchmark = BENCH_Step(test_split,
-                        market=info['market'][0], \
-                        benchmark=info['benchmark'][0], \
-                        feat=info['feat'][0], \
-                        label=info['label'][0], \
-                        account=10000000, \
-                        filter_pipe=filter_pipe)
+benchmark = eval(info['BENCH_DATASET'][0])(\
+                 today=TODAY,
+                 market=info['market'][0], \
+                 benchmark=info['benchmark'][0], \
+                 feat=info['feat'][0], \
+                 label=info['label'][0], \
+                 account=10000000, \
+                 test_split=test_split,
+                 filter_pipe=filter_pipe)
 
 dataset = init_instance_by_config(benchmark.dataset_config)
 # dataset.prepare('test')

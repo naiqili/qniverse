@@ -30,7 +30,7 @@ args = parser.parse_args()
 
 
 # EXP_NAME, rid = 'GBDT', 'afee3d7e0404433692e3f5bbbac14b99'
-EXP_NAME, rid = 'GBDT', '1fc2cf1e444f433da69e836fa5cf336d'
+EXP_NAME, rid = 'GBDT', 'a6d97665eab048bea8370c04d3ed7072'
 
 SAVE_CSV = True
 TOPK = 10
@@ -52,18 +52,20 @@ test_split = (args.btstart, YESTODAY)
 
 info = {
     'ALGO': ['GBDT'],
-    'BENCH_DATASET': ['BENCH_Step'],
-    'market': ['csi300_ext'], 
+    'BENCH_DATASET': ['BENCH_Train_Step'],
+    'market': ['csi1300_ext'], 
     'benchmark': ["SH000300"], 
-    'feat': ["Alpha158"], 
-    'label': ['r1'],
+    'feat': ["LAlpha360"], 
+    'label': ['r2'],
     'params': [f'topk {TOPK} HT {HT}']
 }
 
 # nameDFilter = NameDFilter(name_rule_re='(SH60[0-9]{4})|(SZ00[0-9]{4})')
 # filter_pipe=[nameDFilter]
 filter_pipe=[]
+
 benchmark = eval(info['BENCH_DATASET'][0])(\
+                 today=TODAY,
                  market=info['market'][0], \
                  benchmark=info['benchmark'][0], \
                  feat=info['feat'][0], \
