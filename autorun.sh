@@ -10,7 +10,7 @@ echo '=================START======================'
 echo $(date)
 
 ED=$(python ./reporter/get_date.py)
-# ED='2024-12-24'
+# ED='2024-12-27'
 
 if [ $ED == "0" ]; then
 # if [ '1' == "0" ]; then
@@ -19,12 +19,12 @@ else
     echo "New data detected: $ED"
     echo 'Update QLIB Database'
     python ./reporter/data_update.py
-    python ~/finance/qniverse/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
+    python ~/finance/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
     echo 'QLIB Database updated'
 
     python -m lilab.qlib.private.bensemble --btstart $ST
     python -m lilab.qlib.private.nensemble --btstart $ST
-    python reporter/model/densemblegbm.py --btstart $ST
+    python -m lilab.qlib.private.densemble --btstart $ST
     python reporter/model/gdbt_skip_pred.py
     python reporter/model/gdbt_skip_fig.py --btstart $ST
 

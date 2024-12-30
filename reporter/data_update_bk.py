@@ -50,7 +50,7 @@ for _, row in symbol_wk.iterrows():
 # symbol_wk = ['600000.SH']
 # for row in symbol_wk:
     # s = row
-    s = row['windcode']
+    # s = row['windcode']
     # print(s)
     # df = wk_db.read_sql("SELECT trade_dt, windcode, open_price, high_price, low_price, close_price, volume, amount, adj_factor FROM a_share_market WHERE windcode='{s}';".format(s=s), db_loc='low_freq_db')
     df = wk_db.read_sql("SELECT * FROM a_share_market WHERE windcode='{s}' ORDER BY trade_dt;".format(s=s), db_loc='low_freq_db')
