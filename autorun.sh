@@ -9,22 +9,22 @@ ST='2024-07-01'
 echo '=================START======================'
 echo $(date)
 
-# ED=$(python ./reporter/get_date.py)
-ED='2024-12-30'
+ED=$(python ./reporter/get_date.py)
+# ED='2024-12-30'
 
 if [ $ED == "0" ]; then
 # if [ '1' == "0" ]; then
     echo "No new data. Have a nice day!"
 else
-    # echo "New data detected: $ED"
-    # echo 'Update QLIB Database'
-    # python ./reporter/data_update.py
-    # python ~/finance/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
-    # echo 'QLIB Database updated'
+    echo "New data detected: $ED"
+    echo 'Update QLIB Database'
+    python ./reporter/data_update.py
+    python ~/finance/LiLab/lilab/qlib/scripts/dump_bin.py dump_all --csv_path /data/linq/.qlib/qlib_data/cn_data/cn_1d_norm --qlib_dir /data/linq/.qlib/qlib_data/cn_data --freq day  --exclude_fields date,symbol
+    echo 'QLIB Database updated'
 
     # python -m lilab.qlib.private.bensemble --btstart $ST
     # python -m lilab.qlib.private.nensemble --btstart $ST
-    python -m lilab.qlib.private.densemble --btstart $ST
+    # python -m lilab.qlib.private.densemble --btstart $ST
     # python reporter/model/gdbt_skip_pred.py
     # python reporter/model/gdbt_skip_fig.py --btstart $ST
 
