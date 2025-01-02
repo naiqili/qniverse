@@ -25,6 +25,8 @@ else
     # python -m lilab.qlib.private.bensemble --btstart $ST
     python -m lilab.qlib.private.mensemble --btstart $ST
     python -m lilab.qlib.private.mensemble0 --btstart $ST
+    python -m lilab.qlib.private.mensemblel0 --btstart $ST
+    python -m lilab.qlib.private.mensembleh0 --btstart $ST
     python -m lilab.qlib.private.nensemble --btstart $ST
     python -m lilab.qlib.private.densemble --btstart $ST
     # python reporter/model/gdbt_skip_pred.py
