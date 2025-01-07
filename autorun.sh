@@ -9,8 +9,8 @@ ST='2024-10-15'
 echo '=================START======================'
 echo $(date)
 
-# ED=$(python ./reporter/get_date.py)
-ED='2025-01-06'
+ED=$(python ./reporter/get_date.py)
+# ED='2025-01-06'
 
 if [ $ED == "0" ]; then
 # if [ '1' == "0" ]; then
