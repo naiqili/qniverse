@@ -30,6 +30,7 @@ from src.PatchTST import PatchTST
 from src.TimeMixer import TimeMixer
 from src.TimesNet import TimesNet
 from src.SegRNN import SegRNN
+from src.diffusion_stock import DiffStock
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
