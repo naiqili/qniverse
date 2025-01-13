@@ -10,10 +10,11 @@ model_config: &model_config
   enc_in: 360
   dec_in: 360
   c_out: 1
-  d_model: 64
+  d_model: 256   # 512
   d_ff: 32
   dropout: 0.1
-  num_samples: 5
+  num_samples: 1 # 5
+
 
 task:
   model:
